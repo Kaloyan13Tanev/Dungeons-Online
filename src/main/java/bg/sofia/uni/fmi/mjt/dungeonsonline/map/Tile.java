@@ -1,11 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
-public abstract class Tile {
+public interface Tile {
 
-    protected final static String IMAGE;
+    public abstract String design();
 
     public abstract boolean isWalkable();
-
-    public abstract void print();
 
 }

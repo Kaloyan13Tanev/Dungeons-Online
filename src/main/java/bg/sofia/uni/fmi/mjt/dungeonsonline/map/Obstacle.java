@@ -1,16 +1,24 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
-public class Obstacle extends Tile {
+public class Obstacle implements Tile {
 
-    IMAGE = ""
+    public Obstacle() {
+
+    }
+
+    @Override
+    public String design() {
+        return """
+                +-----------+
+                |X X X X X X|
+                | X X X X X |
+                |X X X X X X|
+                +-----------+""";
+    }
 
     @Override
     public boolean isWalkable() {
         return false;
     }
 
-    @Override
-    public void print() {
-
-    }
 }

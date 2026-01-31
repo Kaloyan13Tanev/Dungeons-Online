@@ -1,12 +1,16 @@
+import bg.sofia.uni.fmi.mjt.dungeonsonline.map.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.temp.TempMap;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.temp.TempPlayer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.render.RenderMap;
 
-import static bg.sofia.uni.fmi.mjt.dungeonsonline.terminal.TerminalManager.terminal;
+import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) {
-        System.out.println(terminal.getWidth());
-        System.out.println(terminal.getHeight());
+
+    public static void main(String[] args) throws IOException {
         RenderMap renderMap = new RenderMap();
         renderMap.render();
+        TempPlayer.THE_PLAYER.play(TempMap.GAME_MAP);
     }
+
 }

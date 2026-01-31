@@ -1,12 +1,16 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.temp.TempPlayer;
+
 public class GameMap {
 
     private static final Ground G = new Ground();
     private static final Obstacle O = new Obstacle();
+    private final Ground SPAWN = new Ground();
+
 
     private final  Tile[][] grid = {
-            {G, G, G, G, G, G, G, G, G, G, G},
+            {SPAWN, G, G, G, G, G, G, G, G, G, G},
             {G, G, G, O, O, G, G, G, G, G, G},
             {G, G, G, O, O, O, G, G, G, G, G},
             {G, G, G, G, O, O, G, G, G, G, G},
@@ -18,6 +22,10 @@ public class GameMap {
             {G, O, O, G, G, G, G, G, O, O, G},
             {G, G, G, G, G, G, G, G, G, G, G}
     };
+
+    public GameMap() {
+        SPAWN.addPlayer(TempPlayer.THE_PLAYER);
+    }
 
     public int getWidth() {
         return grid.length;

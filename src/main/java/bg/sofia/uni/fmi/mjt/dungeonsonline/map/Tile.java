@@ -1,9 +1,21 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
-public interface Tile {
+public abstract class Tile {
 
-    public abstract String design();
+    private final TileType tileType;
+    private final boolean isWalkable;
 
-    public abstract boolean isWalkable();
+    public Tile(TileType tileType, boolean isWalkable) {
+        this.tileType = tileType;
+        this.isWalkable = isWalkable;
+    }
+
+    public TileType getTileType() {
+        return tileType;
+    }
+
+    public boolean isWalkable() {
+        return isWalkable;
+    }
 
 }

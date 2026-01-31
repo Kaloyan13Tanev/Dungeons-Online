@@ -1,10 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
-public class Map {
+public class GameMap {
 
-    public static final Ground G = new Ground();
-    public static final Obstacle O = new Obstacle();
-    public static final  Tile[][] MAP = {
+    private static final Ground G = new Ground();
+    private static final Obstacle O = new Obstacle();
+
+    private final  Tile[][] grid = {
             {G, G, G, G, G, G, G, G, G, G, G},
             {G, G, G, O, O, G, G, G, G, G, G},
             {G, G, G, O, O, O, G, G, G, G, G},
@@ -18,5 +19,15 @@ public class Map {
             {G, G, G, G, G, G, G, G, G, G, G}
     };
 
-    //players //items //minion?
+    public int getWidth() {
+        return grid.length;
+    }
+
+    public int getHeight() {
+        return grid[0].length;
+    }
+
+    public Tile getTile(int row, int col) {
+        return grid[row][col];
+    }
 }

@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.entity.Player;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.render.RenderTile;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.treasure.Item;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,8 @@ public abstract class WalkableTile extends Tile {
     public WalkableTile(TileType tileType) {
         super(tileType, true);
         players = new HashSet<>();
+        items = new ArrayList<>();
+        minion = Optional.of(new Minion());
     }
 
     public void removePlayer(Player player) {
@@ -38,7 +41,15 @@ public abstract class WalkableTile extends Tile {
         items.add(item);
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
+
     public Set<Player> getPlayers() {
         return Collections.unmodifiableSet(players);
+    }
+
+    public Optional<Minion> getMinion() {
+        return minion;
     }
 }

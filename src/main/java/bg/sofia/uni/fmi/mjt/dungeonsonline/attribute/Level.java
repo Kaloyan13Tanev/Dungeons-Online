@@ -12,4 +12,24 @@ public class Level {
         this.xpBar = 0;
     }
 
+    public int getValue() {
+        return level;
+    }
+
+    public int getXP() {
+        return xpBar;
+    }
+
+    public boolean isGreaterThan(int value) {
+        return level > value;
+    }
+
+    public boolean isLessThan(int value) {
+        return level < value;
+    }
+
+    public boolean isEqualTo(int value) {
+        return level == value;
+    }
+
 }

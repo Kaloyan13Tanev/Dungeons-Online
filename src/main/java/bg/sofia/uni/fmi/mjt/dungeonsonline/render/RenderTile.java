@@ -11,6 +11,10 @@ public class RenderTile {
     private static final int TILE_WIDTH = 11;
     private static final int TILE_HEIGHT = 4;
     private static final int PLAYER_ROW = 0;
+    private static final int MINION_ROW = 1;
+    private static final char MINION_SYMBOL = 'M';
+    private static final int ITEM_ROW = 2;
+    private static final int ITEM_ROWS_COUNT = 2;
 
     public static void render(WalkableTile tile, int row, int col) {
         switch (tile.getTileType()) {
@@ -59,14 +63,14 @@ public class RenderTile {
         renderTile(row, col, (i) -> {
             terminal.writer().print(" ".repeat(TILE_WIDTH));
         });
-        renderPlayers(tile);
-        //renderItems();
+        renderPlayers(row, col, tile);
+        renderMinion(row, col, tile);
+        renderItems(row, col, tile);
     }
 
-    private static void renderPlayers(WalkableTile tile) {
+    private static void renderPlayers(int row, int col, WalkableTile tile) {
         for (Player player : tile.getPlayers()) {
-            Console.moveCursor(PLAYER_ROW + getPlayerTerminalRow(player),
-                    getPlayerTerminalCol(player) + player.getPlayerID() - 1);
+            Console.moveCursor(PLAYER_ROW + row, col + player.getPlayerID() - 1);
             terminal.writer().print(player.getPlayerID());
         }
     }
@@ -77,5 +81,29 @@ public class RenderTile {
 
     private static int getPlayerTerminalCol(Player player) {
         return (player.getY() * (TILE_WIDTH + 1)) + 2;
+    }
+
+    private static void renderMinion(int row, int col, WalkableTile tile) {
+        if (tile.getMinion().isPresent()) {
+            Console.moveCursor(row + MINION_ROW, col + (TILE_WIDTH / 2));
+            terminal.writer().print(MINION_SYMBOL);
+        }
+    }
+
+    private static void renderItems(int row, int col, WalkableTile tile) {
+        RenderItem renderItem = new RenderItem();
+
+        int max = ITEM_ROWS_COUNT * TILE_WIDTH;
+
+        if (!tile.getItems().isEmpty()) {
+            for (int i = 0; i < tile.getItems().size() && i < max; i++) {
+                int currRow = row + ITEM_ROW + (i / TILE_WIDTH);
+                int currCol = col + (i % TILE_WIDTH);
+
+                Console.moveCursor(currRow, currCol);
+
+                terminal.writer().print(renderItem.renderOnTile(tile.getItems().get(i)));
+            }
+        }
     }
 }

@@ -19,4 +19,19 @@ public class Stats {
         this.defense = START_DEFENSE;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getMana() {
+        return mana;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
 }

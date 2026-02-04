@@ -168,9 +168,11 @@ public class Player extends Entity {
         ItemSelector selector = new ItemSelector(tile.getItems());
         Item item = selector.initializeSelector();
 
-        tile.removeItem(item);
-        RenderTile.render(tile, this);
-        backpack.addItem(item);
+        if (item != null) {
+            tile.removeItem(item);
+            RenderTile.render(tile, this);
+            backpack.addItem(item);
+        }
     }
 
 }

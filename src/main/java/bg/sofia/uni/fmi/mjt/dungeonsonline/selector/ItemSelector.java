@@ -44,7 +44,7 @@ public class ItemSelector {
                 }
                 case "exit" -> {
                     itemChoice.clearSelection();
-                    break;
+                    return null;
                 }
                 case "enter" -> {
                     itemChoice.clearSelection();

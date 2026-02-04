@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.temp.TempPlayer;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.treasure.Spell;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.treasure.Weapon;
 
 public class GameMap {
@@ -27,6 +28,7 @@ public class GameMap {
     public GameMap() {
         SPAWN.addPlayer(TempPlayer.THE_PLAYER);
         SPAWN.addItem(new Weapon());
+        SPAWN.addItem(new Spell(50));
     }
 
     public int getWidth() {

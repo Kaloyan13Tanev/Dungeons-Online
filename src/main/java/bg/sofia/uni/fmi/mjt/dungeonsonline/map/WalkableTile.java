@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.map;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.entity.Minion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.entity.Player;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.render.RenderBackpack;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.render.RenderTile;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.treasure.Item;
 
@@ -14,9 +15,9 @@ import java.util.Set;
 
 public abstract class WalkableTile extends Tile {
 
-    Set<Player> players;
-    List<Item> items;
-    Optional<Minion> minion;
+    private Set<Player> players;
+    private List<Item> items;
+    private Optional<Minion> minion;
 
     public WalkableTile(TileType tileType) {
         super(tileType, true);

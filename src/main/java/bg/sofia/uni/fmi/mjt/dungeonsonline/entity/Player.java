@@ -9,7 +9,9 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.exception.PlayerLimitReachedException
 import bg.sofia.uni.fmi.mjt.dungeonsonline.exception.TileNotWalkableException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.map.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.map.WalkableTile;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.render.RenderItemChoice;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.render.RenderTile;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.selector.ItemSelector;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.treasure.Item;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.treasure.Weapon;
 
@@ -99,7 +101,7 @@ public class Player extends Entity {
                 case 'd', 'D' -> move(Direction.RIGHT, gameMap);
                 case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> setSelectedItem(key);
                 case 'e', 'E' -> useItem();
-                case 'r', 'R' -> pickUpItem(gameMap);
+                case 'r', 'R' -> pickUpItem((WalkableTile) gameMap.getTile(x, y));
             }
         }
     }
@@ -153,13 +155,22 @@ public class Player extends Entity {
         }
     }
 
-    private void pickUpItem(GameMap gameMap) {
+    private void pickUpItem(WalkableTile tile) throws IOException {
         int index = backpack.findEmptySlot();
 
         if (index == -1) {
             throw new BackpackIsFullException("Your backpack is full! Drop an item to pick a new one!");
         }
-        //switch list with pickup options
+
+        RenderItemChoice itemChoice = new RenderItemChoice(tile.getItems());
+        itemChoice.render();
+
+        ItemSelector selector = new ItemSelector(tile.getItems());
+        Item item = selector.initializeSelector();
+
+        tile.removeItem(item);
+        RenderTile.render(tile, this);
+        backpack.addItem(item);
     }
 
 }

@@ -17,4 +17,15 @@ public class Console {
         terminal.writer().flush();
     }
 
+    public static void clearArea(int startRow, int startCol, int width, int height) {
+        String spaces = " ".repeat(width);
+
+        for (int i = 0; i < height; i++) {
+            Console.moveCursor(startRow + i, startCol);
+            terminal.writer().print(spaces);
+        }
+
+        terminal.writer().flush();
+    }
+
 }

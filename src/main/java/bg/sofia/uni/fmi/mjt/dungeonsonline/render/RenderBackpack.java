@@ -11,6 +11,8 @@ public class RenderBackpack {
     private static final String LABEL = "=".repeat(31) + " BACKPACK " + "=".repeat(31);
 
     public void renderBackpack(Backpack backpack) {
+        Console.clearArea(START_ROW, START_COLUMN, LABEL.length(), backpack.getSize() + 1);
+
         RenderItem renderItem = new RenderItem();
 
         Console.moveCursor(START_ROW, START_COLUMN);

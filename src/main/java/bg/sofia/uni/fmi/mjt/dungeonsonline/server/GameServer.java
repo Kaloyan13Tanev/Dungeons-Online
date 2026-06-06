@@ -12,8 +12,13 @@ public class GameServer {
     private static final int MAX_PLAYER_COUNT = 3;
 
     private static AtomicInteger playerCount = new AtomicInteger(0);
+    private final RequestRouter router;
 
-    public void main() {
+    public GameServer(RequestRouter router) {
+        this.router = router;
+    }
+
+    public void run() {
         try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
              ExecutorService executor = Executors.newFixedThreadPool(MAX_PLAYER_COUNT)) {
 
@@ -21,7 +26,7 @@ public class GameServer {
                 Socket client = serverSocket.accept();
 
                 if (playerCount.get() < MAX_PLAYER_COUNT) {
-                    executor.execute(new ClientRequestReceiver(client.getInputStream()));
+                    executor.execute(new ClientRequestReceiver(client.getInputStream(), router));
                 } else {
                     //reject player from lobby
                 }

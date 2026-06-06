@@ -8,9 +8,11 @@ import java.io.InputStreamReader;
 public class ClientRequestReceiver implements Runnable {
 
     private final InputStream inputStream;
+    private final RequestRouter requestRouter;
 
-    public ClientRequestReceiver(InputStream inputStream) {
+    public ClientRequestReceiver(InputStream inputStream, RequestRouter requestRouter) {
         this.inputStream = inputStream;
+        this.requestRouter = requestRouter;
     }
 
     @Override
@@ -19,7 +21,7 @@ public class ClientRequestReceiver implements Runnable {
             String inputLine;
             while ((inputLine = in.readLine()) != null) { // read the message from the client
                 System.out.println("Message received from client: " + inputLine);
-                //requestRouter.route(inputLine);
+                requestRouter.route(inputLine);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());

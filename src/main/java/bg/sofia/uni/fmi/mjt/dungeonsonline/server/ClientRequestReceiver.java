@@ -26,7 +26,7 @@ public class ClientRequestReceiver implements Runnable {
             String inputLine;
             while ((inputLine = in.readLine()) != null) { // read the message from the client
                 Request request = GSON.fromJson(inputLine, Request.class);
-                System.out.println("Message received from client " + request.getAddress() + ": " + inputLine);
+                System.out.println("Message received from client " + request.getPort() + ": " + inputLine);
                 requestRouter.route(request);
             }
         } catch (IOException e) {

@@ -10,9 +10,9 @@ public class RequestRouter {
 
     public void route(Request request) {
         switch (request.getCommand()) {
-            case "quit" -> System.out.println("Player " + request.getAddress() + "quit");
+            case "quit" -> System.out.println("Player " + request.getPort() + "quit");
             case "move" -> handler = new MoveHandler();
-            default -> System.out.println("Command " + request + " was called by " + request.getAddress());
+            default -> System.out.println("Command " + request + " was called by " + request.getPort());
         }
 
         handler.handle();

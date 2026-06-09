@@ -1,22 +1,20 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.common;
 
-import java.net.InetAddress;
-
 public class Request {
 
     private final String command;
-    private final InetAddress address;
+    private final int port;
 
-    public Request(String command, InetAddress address) {
+    public Request(String command, int port) {
         this.command = command;
-        this.address = address;
+        this.port = port;
     }
 
     public String getCommand() {
         return command;
     }
 
-    public InetAddress getAddress() {
-        return address;
+    public int getPort() {
+        return port;
     }
 }

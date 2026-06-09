@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.client;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.common.Request;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.RequestRouter;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ public class PlayerClient {
 
                 System.out.println("Sending message <" + message + "> to the server...");
 
-                Request request = new Request(message, socket.getInetAddress());
+                Request request = new Request(message, socket.getLocalPort());
                 writer.println(GSON.toJson(request));
             }
         } catch (IOException e) {

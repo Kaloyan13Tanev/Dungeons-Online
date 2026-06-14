@@ -1,8 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.Request;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.serialize.Deserializer;
 import com.google.gson.Gson;
-import org.example.common.request.Request;
-import org.example.common.serialize.Deserializer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,8 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.response.Response;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.serialize.Serializer;
 import com.google.gson.Gson;
-import org.example.common.response.Response;
-import org.example.common.serialize.Serializer;
 
 public final class ResponseSerializer implements Serializer<Response> {
 

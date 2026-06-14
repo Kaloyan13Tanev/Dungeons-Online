@@ -1,7 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.registry;
 
-import org.example.common.response.Response;
-import org.example.server.serialization.ResponseSerializer;
+
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.response.Response;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization.ResponseSerializer;
 
 import java.io.BufferedWriter;
 import java.util.Map;

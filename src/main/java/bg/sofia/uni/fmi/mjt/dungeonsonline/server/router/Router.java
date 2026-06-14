@@ -1,10 +1,9 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.router;
 
-
-import bg.sofia.uni.fmi.mjt.dungeonsonline.common.Request;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.Request;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.Handler;
 
 import java.util.Map;
-import java.util.logging.Handler;
 
 public class Router {
 

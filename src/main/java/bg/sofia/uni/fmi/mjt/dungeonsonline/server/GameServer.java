@@ -1,32 +1,39 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.player.PlayerIdPool;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.registry.ClientConnectionRegistry;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.router.Router;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GameServer {
     private static final int SERVER_PORT = 4444;
-    private static final int MAX_PLAYER_COUNT = 3;
 
-    private static AtomicInteger playerCount = new AtomicInteger(0);
-    private final RequestRouter router;
+    private final PlayerIdPool playerIdPool;
+    private final Router router;
+    private final ClientConnectionRegistry registry;
 
-    public GameServer(RequestRouter router) {
+    public GameServer(PlayerIdPool playerIdPool, Router router, ClientConnectionRegistry registry) {
+        this.playerIdPool = playerIdPool;
         this.router = router;
+        this.registry = registry;
     }
 
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
-             ExecutorService executor = Executors.newFixedThreadPool(MAX_PLAYER_COUNT)) {
+             ExecutorService executor = Executors.newFixedThreadPool(playerIdPool.getMaxPlayers())) {
 
             while (true) {
                 Socket client = serverSocket.accept();
+                Integer id = playerIdPool.acquireId();
 
-                if (playerCount.get() < MAX_PLAYER_COUNT) {
-                    executor.execute(new ClientRequestReceiver(client.getInputStream(), router));
+                if (id != null) {
+                    executor.execute(new ClientRequestHandler(client.getInputStream(), client.getOutputStream(),
+                            id, router, registry));
                 } else {
                     //reject player from lobby
                 }

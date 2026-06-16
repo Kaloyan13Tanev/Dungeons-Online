@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.QuitRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.Request;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.common.response.Response;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.Handler;
@@ -11,9 +12,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
-public class ClientRequestHandler implements Runnable {
+public class ClientRequestHandler {
 
     private final InputStream inputStream;
     private final OutputStream outputStream;
@@ -30,22 +30,21 @@ public class ClientRequestHandler implements Runnable {
         this.registry = registry;
     }
 
-    @Override
-    public void run() {
+    public void listen() {
 
         RequestDeserializer deserializer = new RequestDeserializer(inputStream);
-        try (inputStream;
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-
-            registry.acceptNewConnection(id, writer);
+        try (inputStream) {
 
             Request request;
             while ((request = deserializer.deserialize()) != null) {
+                if (request.getClass() == QuitRequest.class) {
+                    break;
+                }
+
                 Handler handler = router.route(request);
                 Response response = handler.handle(id, request);
                 registry.sendResponse(response);
             }
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

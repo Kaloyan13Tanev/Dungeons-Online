@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.communication;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.QuitRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.Request;
@@ -8,31 +8,27 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.registry.ClientConnectionRegis
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.router.Router;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization.RequestDeserializer;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 public class ClientRequestHandler {
 
     private final InputStream inputStream;
-    private final OutputStream outputStream;
     private final Integer id;
     private final Router router;
     private final ClientConnectionRegistry registry;
-
-    public ClientRequestHandler(InputStream inputStream, OutputStream outputStream, Integer id, Router router,
-                                ClientConnectionRegistry registry) {
+    private final RequestDeserializer deserializer;
+    public ClientRequestHandler(InputStream inputStream, Integer id, Router router,
+                                ClientConnectionRegistry registry, RequestDeserializer deserializer) {
         this.inputStream = inputStream;
-        this.outputStream = outputStream;
         this.id = id;
         this.router = router;
         this.registry = registry;
+        this.deserializer = deserializer;
     }
 
     public void listen() {
 
-        RequestDeserializer deserializer = new RequestDeserializer(inputStream);
         try (inputStream) {
 
             Request request;

@@ -27,7 +27,7 @@ public class EntryPoint {
         ResponseSerializer serializer = new ResponseSerializer();
         ClientConnectionRegistry registry = new ClientConnectionRegistry(new HashMap<>(), serializer);
 
-        GameServer gameServer = new GameServer(playerIdPool, router, registry);
+        GameServer gameServer = new GameServer(playerIdPool, router, registry, serializer);
         gameServer.run();
     }
 

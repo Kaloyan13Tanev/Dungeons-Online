@@ -1,8 +1,12 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.communication.PlayerLifeCycle;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.communication.RejectedPlayer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.player.PlayerIdPool;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.registry.ClientConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.router.Router;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization.RequestDeserializer;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization.ResponseSerializer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,11 +20,14 @@ public class GameServer {
     private final PlayerIdPool playerIdPool;
     private final Router router;
     private final ClientConnectionRegistry registry;
+    private final ResponseSerializer serializer;
 
-    public GameServer(PlayerIdPool playerIdPool, Router router, ClientConnectionRegistry registry) {
+    public GameServer(PlayerIdPool playerIdPool, Router router, ClientConnectionRegistry registry,
+                      ResponseSerializer serializer) {
         this.playerIdPool = playerIdPool;
         this.router = router;
         this.registry = registry;
+        this.serializer = serializer;
     }
 
     public void run() {
@@ -32,18 +39,16 @@ public class GameServer {
                 Integer id = playerIdPool.acquireId();
 
                 if (id != null) {
-                    executor.execute(new PlayerLifeCycle(client, router, registry, playerIdPool, id));
+                    RequestDeserializer deserializer = new RequestDeserializer(client.getInputStream());
+                    executor.execute(new PlayerLifeCycle(client, router, registry, playerIdPool, serializer,
+                            deserializer, id));
                 } else {
-                    //reject player from lobby
+                    Thread.ofVirtual().start(new RejectedPlayer(client));
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
-//    private void clientSetup(InputStream in) {
-//        ClientRequestSender clientRequestSender = new ClientRequestSender(in);
-//    }
 
 }

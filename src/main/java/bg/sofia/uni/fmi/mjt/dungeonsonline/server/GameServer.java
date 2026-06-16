@@ -32,8 +32,7 @@ public class GameServer {
                 Integer id = playerIdPool.acquireId();
 
                 if (id != null) {
-                    executor.execute(new ClientRequestHandler(client.getInputStream(), client.getOutputStream(),
-                            id, router, registry));
+                    executor.execute(new PlayerLifeCycle(client, router, registry, playerIdPool, id));
                 } else {
                     //reject player from lobby
                 }

@@ -17,7 +17,7 @@ public class EntryPoint {
     void main() {
         PlayerIdPool playerIdPool = new PlayerIdPool();
 
-        Map<Class<? extends Request>, ? extends Handler> routes = Map.of(
+        Map<Class<? extends Request>, ? extends Handler<? extends Request>> routes = Map.of(
                 MoveRequest.class, new MoveHandler()
                 // AttackRequest.class, new AttackHandler(),
                 // PickUpRequest.class, new PickUpHandler()

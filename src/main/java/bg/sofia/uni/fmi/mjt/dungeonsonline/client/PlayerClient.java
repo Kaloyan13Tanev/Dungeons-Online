@@ -1,5 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.client;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.channel.ClientReceiveChannel;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.channel.ClientSendChannel;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,8 +23,8 @@ public class PlayerClient {
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              Scanner scanner = new Scanner(System.in)) {
 
-            //TODO: inject the channels
             Thread receiveChannel = new Thread(new ClientReceiveChannel(reader));
+            receiveChannel.setDaemon(true);
             receiveChannel.start();
 
             ClientSendChannel sendChannel = new ClientSendChannel(writer, scanner);

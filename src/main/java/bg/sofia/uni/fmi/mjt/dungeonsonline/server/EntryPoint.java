@@ -1,34 +1,22 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.MoveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.common.request.Request;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.Handler;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.MoveHandler;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.player.PlayerIdPool;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.registry.ClientConnectionRegistry;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.router.Router;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.serialization.ResponseSerializer;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool.IdPool;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 public class EntryPoint {
 
+    private static final int PLAYER_COUNT = 9;
+
     void main() {
-        PlayerIdPool playerIdPool = new PlayerIdPool();
-
-        Map<Class<? extends Request>, ? extends Handler<? extends Request>> routes = Map.of(
-                MoveRequest.class, new MoveHandler()
-                // AttackRequest.class, new AttackHandler(),
-                // PickUpRequest.class, new PickUpHandler()
-        );
-        Router router = new Router(routes);
-
-        ResponseSerializer serializer = new ResponseSerializer();
-        ClientConnectionRegistry registry = new ClientConnectionRegistry(new HashMap<>(), serializer);
-
-        GameServer gameServer = new GameServer(playerIdPool, router, registry, serializer);
-        gameServer.run();
+        IdPool pool = new IdPool(PLAYER_COUNT);
+        ConnectionRegistry registry = new ConnectionRegistry();
+        try {
+            GameServer server = new GameServer(pool, registry);
+            server.run();
+        } catch (IOException e) {
+            System.out.println("Could not start the server. Is the port already in use?");
+        }
     }
-
 }

@@ -28,11 +28,19 @@ public class IdPool {
     }
 
     public synchronized void release(int id) {
-        if (id < MIN_ID || id > maxId() || pool.contains(id)) {
+        if (id < MIN_ID || id > maxId()) {
+            return;
+        }
+
+        if (pool.contains(id)) {
             return;
         }
 
         pool.add(id);
+    }
+
+    public int capacity() {
+        return playerCount;
     }
 
     private int maxId() {

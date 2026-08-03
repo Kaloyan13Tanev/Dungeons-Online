@@ -26,11 +26,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameServer {
 
     private static final int SERVER_PORT = 8080;
     private static final String REJECTION_MESSAGE = "Server is full. Try again later.";
+    private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 
     private final IdPool pool;
     private final ConnectionRegistry registry;
@@ -46,6 +49,8 @@ public class GameServer {
 
     public void run() {
         open.set(true);
+        LOGGER.log(Level.CONFIG, "Server listening on port {0}, capacity {1} players.",
+            new Object[] {SERVER_PORT, pool.capacity()});
 
         ServerSocket server = serverSocket;
         try (server;
@@ -56,6 +61,7 @@ public class GameServer {
                     socket = server.accept();
                 } catch (IOException e) {
                     if (!open.get()) {
+                        LOGGER.log(Level.INFO, "Server socket closed, shutting down.");
                         break;
                     }
                     throw e;
@@ -71,11 +77,13 @@ public class GameServer {
                 try {
                     executor.submit(() -> accept(playerId, socket));
                 } catch (RejectedExecutionException e) {
+                    LOGGER.log(Level.WARNING, "Could not start a session for player " + playerId + ".", e);
                     pool.release(playerId);
                     closeQuietly(socket);
                 }
             }
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Unrecoverable error in the accept loop. The server is shutting down.", e);
             throw new RuntimeException(e);
         } finally {
             open.set(false);
@@ -86,13 +94,16 @@ public class GameServer {
         try (socket) {
             PlayerConnection connection = registry.register(playerId, socket);
             connection.send("ACCEPTED " + playerId);
+            LOGGER.log(Level.INFO, "Player {0} connected.", playerId);
 
             connection.listen(message -> handle(playerId, message));
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Connection failed for player " + playerId + ".", e);
         } finally {
             registry.unregister(playerId);
             registry.sendToAll("Player " + playerId + " left the game.");
             pool.release(playerId);
+            LOGGER.log(Level.INFO, "Player {0} disconnected.", playerId);
         }
     }
 
@@ -102,9 +113,11 @@ public class GameServer {
             request = mapper.deserialize(message);
         } catch (InvalidRequestException e) {
             registry.sendTo(playerId, "That command could not be read by the server.");
+            LOGGER.log(Level.WARNING, "Failed to deserialize a request from player " + playerId + ".", e);
             return;
         }
 
+        LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
         switch (request) {
             case MoveRequest(Direction direction) ->
                 registry.sendToAll("Player " + playerId + " moved " + direction);
@@ -122,19 +135,24 @@ public class GameServer {
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
             writer.write(REJECTION_MESSAGE);
             writer.flush();
+            LOGGER.log(Level.INFO, "Rejected a connection from {0}: the server is full.",
+                socket.getRemoteSocketAddress());
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING,
+                "Failed to send the rejection notice to " + socket.getRemoteSocketAddress() + ".", e);
             throw new RuntimeException(e);
         }
     }
 
-    private void closeQuietly(Closeable resource) {
-        if (resource == null) {
+    private void closeQuietly(Closeable socket) {
+        if (socket == null) {
             return;
         }
 
         try {
-            resource.close();
+            socket.close();
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to close a resource during teardown.", e);
         }
     }
 }

@@ -9,8 +9,12 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PlayerConnection implements AutoCloseable {
+
+    private static final Logger LOGGER = Logger.getLogger(PlayerConnection.class.getName());
 
     private final int playerId;
     private final Socket socket;
@@ -45,7 +49,9 @@ public class PlayerConnection implements AutoCloseable {
             writer.write(message);
             writer.newLine();
             writer.flush();
+            LOGGER.log(Level.FINE, "Sent to player {0}: {1}", new Object[] {playerId, message});
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to send a message to player " + playerId + ".", e);
             close();
         }
     }
@@ -58,6 +64,7 @@ public class PlayerConnection implements AutoCloseable {
             }
         } catch (IOException e) {
             if (open.get()) {
+                LOGGER.log(Level.WARNING, "Lost the connection to player " + playerId + " unexpectedly.", e);
             }
         }
     }
@@ -70,7 +77,9 @@ public class PlayerConnection implements AutoCloseable {
 
         try {
             socket.close();
+            LOGGER.log(Level.FINE, "Socket for player {0} closed.", playerId);
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to close socket for player " + playerId, e);
         }
     }
 }

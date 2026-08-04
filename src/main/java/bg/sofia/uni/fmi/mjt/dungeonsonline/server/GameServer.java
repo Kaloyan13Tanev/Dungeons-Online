@@ -3,17 +3,6 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.PlayerConnection;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool.IdPool;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidRequestException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.RequestMapper;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.AttackRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.CastRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.DropRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.GiveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.PickUpRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.QuitRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -37,13 +26,14 @@ public class GameServer {
 
     private final IdPool pool;
     private final ConnectionRegistry registry;
-    private final RequestMapper mapper = new RequestMapper();
+    private final RequestHandler handler;
     private final ServerSocket serverSocket;
     private final AtomicBoolean open = new AtomicBoolean();
 
-    public GameServer(IdPool pool, ConnectionRegistry registry) throws IOException {
+    public GameServer(IdPool pool, ConnectionRegistry registry, RequestHandler handler) throws IOException {
         this.pool = pool;
         this.registry = registry;
+        this.handler = handler;
         this.serverSocket = new ServerSocket(SERVER_PORT);
     }
 
@@ -75,7 +65,7 @@ public class GameServer {
 
                 int playerId = id.get();
                 try {
-                    executor.submit(() -> accept(playerId, socket));
+                    executor.execute(() -> accept(playerId, socket));
                 } catch (RejectedExecutionException e) {
                     LOGGER.log(Level.WARNING, "Could not start a session for player " + playerId + ".", e);
                     pool.release(playerId);
@@ -97,7 +87,7 @@ public class GameServer {
             connection.send("ACCEPTED " + playerId);
             LOGGER.log(Level.INFO, "Player {0} connected.", playerId);
 
-            connection.listen(message -> handle(connection, message));
+            connection.listen(message -> handler.handle(playerId, message));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Connection failed for player " + playerId + ".", e);
         } finally {
@@ -108,42 +98,17 @@ public class GameServer {
         }
     }
 
-    private void handle(PlayerConnection connection, String message) {
-        int playerId = connection.playerId();
-
-        Request request;
-        try {
-            request = mapper.deserialize(message);
-        } catch (InvalidRequestException e) {
-            registry.sendTo(playerId, "That command could not be read by the server.");
-            LOGGER.log(Level.WARNING, "Failed to deserialize a request from player " + playerId + ".", e);
-            return;
-        }
-
-        LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
-        switch (request) {
-            case MoveRequest(Direction direction) ->
-                registry.sendToAll("Player " + playerId + " moved " + direction);
-            case QuitRequest ignored -> connection.close();
-            case PickUpRequest ignored -> registry.sendTo(playerId, "Picking up is not implemented yet.");
-            case GiveRequest ignored -> registry.sendTo(playerId, "Giving items is not implemented yet.");
-            case AttackRequest ignored -> registry.sendTo(playerId, "Attacking is not implemented yet.");
-            case CastRequest ignored -> registry.sendTo(playerId, "Casting is not implemented yet.");
-            case DropRequest ignored -> registry.sendTo(playerId, "Dropping is not implemented yet.");
-        }
-    }
-
     private void reject(Socket socket) {
         try (socket;
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
             writer.write(REJECTION_MESSAGE);
+            writer.newLine();
             writer.flush();
             LOGGER.log(Level.INFO, "Rejected a connection from {0}: the server is full.",
                 socket.getRemoteSocketAddress());
         } catch (IOException e) {
             LOGGER.log(Level.WARNING,
                 "Failed to send the rejection notice to " + socket.getRemoteSocketAddress() + ".", e);
-            throw new RuntimeException(e);
         }
     }
 

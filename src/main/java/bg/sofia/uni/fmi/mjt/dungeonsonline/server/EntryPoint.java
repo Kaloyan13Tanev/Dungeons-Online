@@ -34,8 +34,9 @@ public class EntryPoint {
     void main() {
         IdPool pool = new IdPool(PLAYER_COUNT);
         ConnectionRegistry registry = new ConnectionRegistry();
+        RequestHandler handler = new RequestHandler(registry);
         try {
-            GameServer server = new GameServer(pool, registry);
+            GameServer server = new GameServer(pool, registry, handler);
             server.run();
         } catch (IOException e) {
             System.out.println("Could not start the server.");

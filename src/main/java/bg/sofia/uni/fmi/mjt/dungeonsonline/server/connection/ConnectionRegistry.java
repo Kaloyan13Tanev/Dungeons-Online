@@ -1,7 +1,5 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,10 +10,18 @@ public class ConnectionRegistry {
 
     private static final Logger LOGGER = Logger.getLogger(ConnectionRegistry.class.getName());
 
-    private final Map<Integer, PlayerConnection> connections = new ConcurrentHashMap<>();
+    private final Map<Integer, PlayerConnection> connections;
 
-    public PlayerConnection register(int playerId, Socket socket) throws IOException {
-        PlayerConnection connection = new PlayerConnection(playerId, socket);
+    public ConnectionRegistry() {
+        this.connections = new ConcurrentHashMap<>();
+    }
+
+    public ConnectionRegistry(Map<Integer, PlayerConnection> connections) {
+        this.connections = connections;
+    }
+
+    public void register(PlayerConnection connection) {
+        int playerId = connection.playerId();
 
         PlayerConnection existing = connections.putIfAbsent(playerId, connection);
         if (existing != null) {
@@ -27,8 +33,6 @@ public class ConnectionRegistry {
 
         LOGGER.log(Level.FINE, "Registered player {0}. Connections open: {1}.",
             new Object[] {playerId, connections.size()});
-
-        return connection;
     }
 
     public void unregister(int playerId) {

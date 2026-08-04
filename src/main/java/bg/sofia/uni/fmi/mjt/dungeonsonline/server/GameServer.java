@@ -92,7 +92,8 @@ public class GameServer {
 
     private void accept(int playerId, Socket socket) {
         try (socket) {
-            PlayerConnection connection = registry.register(playerId, socket);
+            PlayerConnection connection = new PlayerConnection(playerId, socket);
+            registry.register(connection);
             connection.send("ACCEPTED " + playerId);
             LOGGER.log(Level.INFO, "Player {0} connected.", playerId);
 

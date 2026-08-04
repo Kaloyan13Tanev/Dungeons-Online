@@ -97,7 +97,7 @@ public class GameServer {
             connection.send("ACCEPTED " + playerId);
             LOGGER.log(Level.INFO, "Player {0} connected.", playerId);
 
-            connection.listen(message -> handle(playerId, message));
+            connection.listen(message -> handle(connection, message));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Connection failed for player " + playerId + ".", e);
         } finally {
@@ -108,7 +108,9 @@ public class GameServer {
         }
     }
 
-    private void handle(int playerId, String message) {
+    private void handle(PlayerConnection connection, String message) {
+        int playerId = connection.playerId();
+
         Request request;
         try {
             request = mapper.deserialize(message);
@@ -122,7 +124,7 @@ public class GameServer {
         switch (request) {
             case MoveRequest(Direction direction) ->
                 registry.sendToAll("Player " + playerId + " moved " + direction);
-            case QuitRequest ignored -> registry.unregister(playerId);
+            case QuitRequest ignored -> connection.close();
             case PickUpRequest ignored -> registry.sendTo(playerId, "Picking up is not implemented yet.");
             case GiveRequest ignored -> registry.sendTo(playerId, "Giving items is not implemented yet.");
             case AttackRequest ignored -> registry.sendTo(playerId, "Attacking is not implemented yet.");

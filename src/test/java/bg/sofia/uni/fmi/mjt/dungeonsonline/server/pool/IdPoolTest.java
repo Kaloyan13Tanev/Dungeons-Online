@@ -2,8 +2,6 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -13,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
 public class IdPoolTest {
 
     private static final int PLAYER_COUNT = 9;
@@ -21,12 +18,12 @@ public class IdPoolTest {
     private IdPool pool;
 
     @BeforeEach
-    void SetUp() {
+    void setUp() {
         pool = new IdPool(PLAYER_COUNT);
     }
 
     @Test
-    void IdPoolThrowsIfPlayerCountNotPositive() {
+    void testConstructorThrowsIfPlayerCountNotPositive() {
         assertThrows(IllegalArgumentException.class, () -> new IdPool(0),
             "Id Pool should throw if playerCount is 0");
         assertThrows(IllegalArgumentException.class, () -> new IdPool(-1),
@@ -34,7 +31,7 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolReturnsIdsInRange() {
+    void testAcquireReturnsIdsInRange() {
         Optional<Integer> id1 = pool.acquire();
         Optional<Integer> id2 = pool.acquire();
 
@@ -45,7 +42,7 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolReturnsEmptyWhenNoIdsLeft() {
+    void testAcquireReturnsEmptyWhenNoIdsLeft() {
         pool = new IdPool(1);
         Optional<Integer> id1 = pool.acquire();
         Optional<Integer> id2 = pool.acquire();
@@ -56,7 +53,7 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolHandsOutEveryIdExactlyOnce() {
+    void testAcquireHandsOutEveryIdExactlyOnce() {
         Set<Integer> acquired = new HashSet<>();
 
         for (int i = 0; i < PLAYER_COUNT; i++) {
@@ -71,7 +68,7 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolReusesReleasedId() {
+    void testAcquireReusesReleasedId() {
         pool = new IdPool(1);
         Optional<Integer> id = pool.acquire();
 
@@ -85,7 +82,7 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolIgnoresReleaseOfFreeId() {
+    void testReleaseIgnoresAlreadyFreeId() {
         pool = new IdPool(1);
         pool.release(1);
         pool.release(1);
@@ -96,7 +93,7 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolIgnoresReleaseOutOfRange() {
+    void testReleaseIgnoresIdOutOfRange() {
         pool = new IdPool(1);
         pool.release(0);
         pool.release(PLAYER_COUNT + 1);
@@ -106,13 +103,13 @@ public class IdPoolTest {
     }
 
     @Test
-    void IdPoolReturnsItsCapacity() {
+    void testCapacityReturnsPlayerCount() {
         assertEquals(PLAYER_COUNT, pool.capacity(),
             "Id Pool should return the playerCount it was built with");
     }
 
 //    @Test
-//    void IdPoolNeverHandsOutSameIdToConcurrentCallers() throws InterruptedException {
+//    void testAcquireNeverHandsOutSameIdToConcurrentCallers() throws InterruptedException {
 //        Set<Integer> acquired = ConcurrentHashMap.newKeySet();
 //        Set<Integer> duplicates = ConcurrentHashMap.newKeySet();
 //        CountDownLatch start = new CountDownLatch(1);

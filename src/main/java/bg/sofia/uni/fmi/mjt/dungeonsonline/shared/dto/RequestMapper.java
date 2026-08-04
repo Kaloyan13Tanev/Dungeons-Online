@@ -7,43 +7,48 @@ import com.google.gson.JsonSyntaxException;
 
 public class RequestMapper {
 
-    private final Gson gson;
-
-    public RequestMapper() {
-        this(new Gson());
-    }
-
-    public RequestMapper(Gson gson) {
-        this.gson = gson;
-    }
+    private static final Gson GSON = new Gson();
 
     public String serialize(Request request) {
-        RequestDTO dto = new RequestDTO(RequestType.of(request), gson.toJson(request));
-
-        return gson.toJson(dto);
+        return toJson(toDTO(request));
     }
 
     public Request deserialize(String json) {
-        RequestDTO dto;
-        try {
-            dto = gson.fromJson(json, RequestDTO.class);
-        } catch (JsonSyntaxException e) {
-            throw new InvalidRequestException("Invalid JSON", e);
-        }
+        return toRequest(fromJson(json));
+    }
 
+    private RequestDTO toDTO(Request request) {
+        return new RequestDTO(RequestType.of(request), GSON.toJson(request));
+    }
+
+    private Request toRequest(RequestDTO dto) {
         if (dto == null || dto.type() == null) {
             throw new InvalidRequestException("Missing or unknown request type");
         }
 
+        Request request;
         try {
-            Request request = gson.fromJson(dto.body(), dto.type().requestClass());
-            if (request == null) {
-                throw new InvalidRequestException("Empty body for " + dto.type());
-            }
-
-            return request;
+            request = GSON.fromJson(dto.body(), dto.type().requestClass());
         } catch (JsonSyntaxException e) {
             throw new InvalidRequestException("Body does not match " + dto.type(), e);
+        }
+
+        if (request == null) {
+            throw new InvalidRequestException("Empty body for " + dto.type());
+        }
+
+        return request;
+    }
+
+    private String toJson(RequestDTO dto) {
+        return GSON.toJson(dto);
+    }
+
+    private RequestDTO fromJson(String json) {
+        try {
+            return GSON.fromJson(json, RequestDTO.class);
+        } catch (JsonSyntaxException e) {
+            throw new InvalidRequestException("Invalid JSON", e);
         }
     }
 }

@@ -24,7 +24,7 @@ public class Backpack {
         this.itemCount = items.length;
     }
 
-    public void addItem(Item item) {
+    public void add(Item item) {
         int index = findEmptySlot();
         if (index == -1) {
             throw new FullBackpackException("Backpack is full, cannot add item");
@@ -32,7 +32,7 @@ public class Backpack {
         items[index] = item;
     }
 
-    public Item removeItem(int index) {
+    public Item remove(int index) {
         if (index < 0 || index >= itemCount) {
             throw new IllegalArgumentException("Invalid item index");
         }

@@ -44,7 +44,9 @@ public class TerrainGrid {
     }
 
     public Terrain getTerrain(Position position) {
-        requireInside(position);
+        if (!isInside(position)) {
+            throw new IllegalArgumentException("Position " + position + " is outside the map");
+        }
 
         return grid[position.row()][position.col()];
     }
@@ -53,9 +55,4 @@ public class TerrainGrid {
         return getTerrain(position).isWalkable();
     }
 
-    private void requireInside(Position position) {
-        if (!isInside(position)) {
-            throw new IllegalArgumentException("Position " + position + " is outside the map");
-        }
-    }
 }

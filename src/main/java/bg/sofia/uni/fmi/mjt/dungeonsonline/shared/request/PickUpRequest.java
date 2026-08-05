@@ -1,3 +1,3 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request;
 
-public record PickUpRequest(int itemId) implements Request { }
+public record PickUpRequest(int treasureId) implements Request { }

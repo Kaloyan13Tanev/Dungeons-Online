@@ -3,8 +3,6 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidRequestException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.RequestMapper;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.AttackRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.CastRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.DropRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.GiveRequest;
@@ -12,6 +10,8 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.PickUpRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.QuitRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.SelectRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.UseRequest;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,10 +54,10 @@ public class RequestHandler {
             case MoveRequest(Direction direction) ->
                 registry.sendToAll("Player " + playerId + " moved " + direction);
             case QuitRequest ignored -> registry.unregister(playerId);
+            case SelectRequest ignored -> registry.sendTo(playerId, "Selecting is not implemented yet.");
+            case UseRequest ignored -> registry.sendTo(playerId, "Using items is not implemented yet.");
             case PickUpRequest ignored -> registry.sendTo(playerId, "Picking up is not implemented yet.");
             case GiveRequest ignored -> registry.sendTo(playerId, "Giving items is not implemented yet.");
-            case AttackRequest ignored -> registry.sendTo(playerId, "Attacking is not implemented yet.");
-            case CastRequest ignored -> registry.sendTo(playerId, "Casting is not implemented yet.");
             case DropRequest ignored -> registry.sendTo(playerId, "Dropping is not implemented yet.");
         }
     }

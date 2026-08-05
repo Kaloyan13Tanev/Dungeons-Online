@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.AttackRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
@@ -17,12 +16,10 @@ public class RequestMapperTest {
     private final RequestMapper mapper = new RequestMapper();
 
     Request request1;
-    Request request2;
 
     @BeforeEach
     void setUp() {
         request1 = new MoveRequest(Direction.UP);
-        request2 = new AttackRequest(1);
     }
 
     @Test

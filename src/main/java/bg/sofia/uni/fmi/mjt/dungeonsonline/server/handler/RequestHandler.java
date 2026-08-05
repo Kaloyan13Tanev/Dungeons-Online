@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidRequestException;
@@ -42,14 +42,14 @@ public class RequestHandler {
 
         LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
         try {
-            dispatch(playerId, request);
+            route(playerId, request);
         } catch (RuntimeException e) {
             registry.sendTo(playerId, FAILED_REQUEST);
             LOGGER.log(Level.SEVERE, "Failed to handle " + request + " from player " + playerId + ".", e);
         }
     }
 
-    private void dispatch(int playerId, Request request) {
+    private void route(int playerId, Request request) {
         switch (request) {
             case MoveRequest(Direction direction) ->
                 registry.sendToAll("Player " + playerId + " moved " + direction);

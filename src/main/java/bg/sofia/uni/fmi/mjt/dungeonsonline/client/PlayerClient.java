@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class PlayerClient {
 
     private static final String SERVER_HOST = "localhost";
-    private static final int SERVER_PORT = 8080;
+    private static final int SERVER_PORT = 4444;
 
     private static final String LOGGING_CONFIG = "/client-logging.properties";
     private static final Path LOG_DIRECTORY = Path.of("logs");

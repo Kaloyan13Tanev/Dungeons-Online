@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.PlayerConnection;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.RequestHandler;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool.IdPool;
 
 import java.io.BufferedWriter;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
 
 public class GameServer {
 
-    private static final int SERVER_PORT = 8080;
+    private static final int SERVER_PORT = 4444;
     private static final String REJECTION_MESSAGE = "Server is full. Try again later.";
     private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 

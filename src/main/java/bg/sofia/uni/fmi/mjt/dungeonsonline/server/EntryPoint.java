@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.RequestHandler;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool.IdPool;
 
 import java.io.IOException;

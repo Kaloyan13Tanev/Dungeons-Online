@@ -26,9 +26,17 @@ public class PlayerConnection implements AutoCloseable {
         this.playerId = playerId;
         this.socket = socket;
         this.reader = new BufferedReader(
-            new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            new InputStreamReader(socket.getInputStream()));
         this.writer = new BufferedWriter(
-            new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+            new OutputStreamWriter(socket.getOutputStream()));
+        this.open = new AtomicBoolean(true);
+    }
+
+    public PlayerConnection(int playerId, Socket socket, BufferedReader reader, BufferedWriter writer) {
+        this.playerId = playerId;
+        this.socket = socket;
+        this.reader = reader;
+        this.writer = writer;
         this.open = new AtomicBoolean(true);
     }
 

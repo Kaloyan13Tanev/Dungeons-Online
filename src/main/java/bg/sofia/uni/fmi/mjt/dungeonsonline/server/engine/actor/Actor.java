@@ -6,8 +6,6 @@ public interface Actor {
 
     int getId();
 
-    String getName();
-
     Stats getStats();
 
     Position getPosition();

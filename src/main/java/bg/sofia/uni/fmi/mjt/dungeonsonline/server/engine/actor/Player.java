@@ -13,11 +13,16 @@ public class Player extends AbstractActor {
     private int selectedSlot;
 
     public Player(int id, Position position) {
-        super(id, new Stats(), position);
+        super(id, new PlayerStats(), position);
 
         this.backpack = new Backpack();
         this.level = new Level();
         this.selectedSlot = FIRST_SLOT;
+    }
+
+    @Override
+    public PlayerStats getStats() {
+        return (PlayerStats) super.getStats();
     }
 
     public Backpack getBackpack() {

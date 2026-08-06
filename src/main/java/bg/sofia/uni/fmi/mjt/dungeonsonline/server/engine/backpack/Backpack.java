@@ -48,19 +48,17 @@ public class Backpack {
         return Collections.unmodifiableList(Arrays.asList(slots.clone()));
     }
 
-    public boolean add(Item item) {
+    public void add(Item item) {
         if (item == null) {
             throw new IllegalArgumentException("Item must not be null");
         }
 
         int slot = findEmptySlot();
         if (slot == NO_EMPTY_SLOT) {
-            return false;
+            throw new FullBackpackException("Your backpack is full!");
         }
 
         slots[slot] = item;
-
-        return true;
     }
 
     public Optional<Item> remove(int slot) {

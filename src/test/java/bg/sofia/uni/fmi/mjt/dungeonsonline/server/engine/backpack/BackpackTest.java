@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,17 +41,11 @@ public class BackpackTest {
     }
 
     @Test
-    void testAddReturnsTrueWhenThereIsRoom() {
-        assertTrue(backpack.add(WEAPON), "Backpack should return true while it has an empty slot");
-    }
-
-    @Test
-    void testAddReturnsFalseAndKeepsTheItemsWhenFull() {
+    void testAddThrowsWhenFull() {
         fill(backpack);
 
-        assertFalse(backpack.add(POTION), "Backpack should return false when every slot is taken");
-        assertEquals(Optional.of(WEAPON), backpack.at(FIRST_SLOT),
-            "Backpack should not replace an item when it has no room");
+        assertThrows(FullBackpackException.class, () -> backpack.add(POTION),
+            "Backpack should throw when every slot is taken");
     }
 
     @Test

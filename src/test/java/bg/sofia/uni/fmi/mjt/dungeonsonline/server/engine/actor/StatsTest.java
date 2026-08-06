@@ -76,7 +76,7 @@ public class StatsTest {
 
     @Test
     void testLevelUpRaisesEveryStat() {
-        stats.levelUp();
+        stats.levelUp(1);
 
         assertEquals(BASE_HEALTH + HEALTH_PER_LEVEL, stats.getMaxHealth(),
             "Stats should raise max health on level up");
@@ -89,11 +89,31 @@ public class StatsTest {
     }
 
     @Test
+    void testLevelUpAppliesEveryLevelItIsGiven() {
+        stats.levelUp(3);
+
+        assertEquals(BASE_HEALTH + 3 * HEALTH_PER_LEVEL, stats.getMaxHealth(),
+            "Stats should raise max health once per level gained");
+        assertEquals(BASE_MANA + 3 * MANA_PER_LEVEL, stats.getMaxMana(),
+            "Stats should raise max mana once per level gained");
+        assertEquals(BASE_ATTACK + 3 * ATTACK_PER_LEVEL, stats.getAttack(),
+            "Stats should raise attack once per level gained");
+        assertEquals(BASE_DEFENSE + 3 * DEFENSE_PER_LEVEL, stats.getDefense(),
+            "Stats should raise defense once per level gained");
+    }
+
+    @Test
+    void testLevelUpThrowsOnNegativeLevels() {
+        assertThrows(IllegalArgumentException.class, () -> stats.levelUp(-1),
+            "Stats should throw when the number of levels is negative");
+    }
+
+    @Test
     void testLevelUpLeavesCurrentHealthAndManaUntouched() {
         stats.takeDamage(BASE_HEALTH / 2);
         stats.spendMana(BASE_MANA / 2);
 
-        stats.levelUp();
+        stats.levelUp(1);
 
         assertEquals(BASE_HEALTH / 2, stats.getHealth(),
             "Stats should raise only the max health on level up, not the current one");
@@ -103,7 +123,7 @@ public class StatsTest {
 
     @Test
     void testLevelUpLeavesRoomToHealUpToTheNewMaximum() {
-        stats.levelUp();
+        stats.levelUp(1);
         stats.heal(HEALTH_PER_LEVEL);
         stats.restoreMana(MANA_PER_LEVEL);
 

@@ -65,11 +65,13 @@ public class Stats {
         return health > 0;
     }
 
-    public void levelUp() {
-        maxHealth += HEALTH_PER_LEVEL;
-        maxMana += MANA_PER_LEVEL;
-        attack += ATTACK_PER_LEVEL;
-        defense += DEFENSE_PER_LEVEL;
+    public void levelUp(int levels) {
+        requireNotNegative(levels, "levels");
+
+        maxHealth += levels * HEALTH_PER_LEVEL;
+        maxMana += levels * MANA_PER_LEVEL;
+        attack += levels * ATTACK_PER_LEVEL;
+        defense += levels * DEFENSE_PER_LEVEL;
     }
 
     public void takeDamage(int damage) {

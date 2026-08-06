@@ -65,7 +65,9 @@ public class LevelTest {
     @Test
     void testAddXpCarriesTheRemainderIntoTheNewLevel() {
         Level small = new Level(STARTING_VALUE, SMALL_CAP);
-        
+
+        small.addXp(SMALL_CAP + 3);
+
         assertEquals(3, small.getXp(), "Level should carry the experience past the cap into the new level");
     }
 

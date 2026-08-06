@@ -43,7 +43,7 @@ public class Player extends AbstractActor {
     }
 
     public void gainExperience(int amount) {
-        int gained = level.gain(amount);
+        int gained = level.addXp(amount);
 
         if (gained > 0) {
             getStats().levelUp(gained);

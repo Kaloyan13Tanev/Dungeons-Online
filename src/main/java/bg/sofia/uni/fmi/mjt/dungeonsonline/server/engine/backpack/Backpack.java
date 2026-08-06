@@ -2,51 +2,90 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 public class Backpack {
 
-    private static final int DEFAULT_ITEM_COUNT = 10;
+    private static final int DEFAULT_CAPACITY = 10;
+    private static final int NO_EMPTY_SLOT = -1;
 
-    private final int itemCount;
-    private final Item[] items;
+    private final Item[] slots;
 
     public Backpack() {
-        this.itemCount = DEFAULT_ITEM_COUNT;
-        this.items = new Item[DEFAULT_ITEM_COUNT];
+        this(DEFAULT_CAPACITY);
     }
 
-    public Backpack(int itemCount) {
-        this.itemCount = itemCount;
-        this.items = new Item[itemCount];
-    }
-
-    public Backpack(Item[] items) {
-        this.items = items;
-        this.itemCount = items.length;
-    }
-
-    public void add(Item item) {
-        int index = findEmptySlot();
-        if (index == -1) {
-            throw new FullBackpackException("Backpack is full, cannot add item");
+    public Backpack(int capacity) {
+        if (capacity < 1) {
+            throw new IllegalArgumentException("Capacity must be positive, got " + capacity);
         }
-        items[index] = item;
+
+        this.slots = new Item[capacity];
     }
 
-    public Item remove(int index) {
-        if (index < 0 || index >= itemCount) {
-            throw new IllegalArgumentException("Invalid item index");
+    public Backpack(Item[] slots) {
+        if (slots == null || slots.length < 1) {
+            throw new IllegalArgumentException("Slots must not be empty");
         }
-        Item removedItem = items[index];
-        items[index] = null;
-        return removedItem;
+
+        this.slots = slots;
+    }
+
+    public int capacity() {
+        return slots.length;
+    }
+
+    public Optional<Item> at(int slot) {
+        requireValidSlot(slot);
+
+        return Optional.ofNullable(slots[slot]);
+    }
+
+    public List<Item> slots() {
+        return Collections.unmodifiableList(Arrays.asList(slots.clone()));
+    }
+
+    public boolean add(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item must not be null");
+        }
+
+        int slot = findEmptySlot();
+        if (slot == NO_EMPTY_SLOT) {
+            return false;
+        }
+
+        slots[slot] = item;
+
+        return true;
+    }
+
+    public Optional<Item> remove(int slot) {
+        requireValidSlot(slot);
+
+        Item removed = slots[slot];
+        slots[slot] = null;
+
+        return Optional.ofNullable(removed);
     }
 
     private int findEmptySlot() {
-        for (int i = 0; i < itemCount; i++) {
-            if (items[i] == null) return i;
+        for (int slot = 0; slot < slots.length; slot++) {
+            if (slots[slot] == null) {
+                return slot;
+            }
         }
 
-        return -1;
+        return NO_EMPTY_SLOT;
     }
 
+    private void requireValidSlot(int slot) {
+        if (slot < 0 || slot >= slots.length) {
+            throw new IllegalArgumentException(
+                "Slot must be in [0, " + slots.length + "), got " + slot);
+        }
+    }
 }

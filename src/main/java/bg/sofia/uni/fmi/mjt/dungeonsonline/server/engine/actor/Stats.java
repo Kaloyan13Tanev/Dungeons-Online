@@ -24,10 +24,10 @@ public class Stats {
     }
 
     public Stats(int maxHealth, int maxMana, int attack, int defense) {
-        requirePositive(maxHealth, "maxHealth");
-        requirePositive(maxMana, "maxMana");
-        requireNotNegative(attack, "attack");
-        requireNotNegative(defense, "defense");
+        requirePositive(maxHealth, "Max health");
+        requirePositive(maxMana, "Max mana");
+        requireNotNegative(attack, "Attack");
+        requireNotNegative(defense, "Defense");
 
         this.maxHealth = maxHealth;
         this.health = maxHealth;
@@ -66,7 +66,7 @@ public class Stats {
     }
 
     public void levelUp(int levels) {
-        requireNotNegative(levels, "levels");
+        requireNotNegative(levels, "Levels");
 
         maxHealth += levels * HEALTH_PER_LEVEL;
         maxMana += levels * MANA_PER_LEVEL;
@@ -75,25 +75,25 @@ public class Stats {
     }
 
     public void takeDamage(int damage) {
-        requireNotNegative(damage, "damage");
+        requireNotNegative(damage, "Damage");
 
         health = Math.max(0, health - damage);
     }
 
     public void heal(int amount) {
-        requireNotNegative(amount, "amount");
+        requireNotNegative(amount, "Amount");
 
         health = Math.min(maxHealth, health + amount);
     }
 
     public void restoreMana(int amount) {
-        requireNotNegative(amount, "amount");
+        requireNotNegative(amount, "Amount");
 
         mana = Math.min(maxMana, mana + amount);
     }
 
     public void spendMana(int amount) {
-        requireNotNegative(amount, "amount");
+        requireNotNegative(amount, "Amount");
 
         if (mana >= amount) {
             mana -= amount;

@@ -5,7 +5,6 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.Backpack;
 
 public class Player extends AbstractActor {
 
-    private static final int SLOT_COUNT = 10;
     private static final int FIRST_SLOT = 0;
 
     private final Backpack backpack;
@@ -34,9 +33,9 @@ public class Player extends AbstractActor {
     }
 
     public void select(int slot) {
-        if (slot < FIRST_SLOT || slot >= SLOT_COUNT) {
+        if (slot < FIRST_SLOT || slot >= backpack.capacity()) {
             throw new IllegalArgumentException(
-                "slot must be in [" + FIRST_SLOT + ", " + SLOT_COUNT + "), got " + slot);
+                "Slot must be in [" + FIRST_SLOT + ", " + backpack.capacity() + "), got " + slot);
         }
 
         selectedSlot = slot;

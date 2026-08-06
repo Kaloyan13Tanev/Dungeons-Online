@@ -21,11 +21,11 @@ public class Level {
 
     public Level(int value, int xpCap) {
         if (value < STARTING_LEVEL) {
-            throw new IllegalArgumentException("value must be at least " + STARTING_LEVEL + ", got " + value);
+            throw new IllegalArgumentException("Value must be at least " + STARTING_LEVEL + ", got " + value);
         }
 
         if (xpCap < 1) {
-            throw new IllegalArgumentException("xpCap must be positive, got " + xpCap);
+            throw new IllegalArgumentException("Xp cap must be positive, got " + xpCap);
         }
 
         this.value = value;

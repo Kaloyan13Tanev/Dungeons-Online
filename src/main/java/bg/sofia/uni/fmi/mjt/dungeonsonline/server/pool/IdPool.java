@@ -13,7 +13,7 @@ public class IdPool {
 
     public IdPool(int playerCount) {
         if (playerCount < 1) {
-            throw new IllegalArgumentException("playerCount must be positive, got " + playerCount);
+            throw new IllegalArgumentException("Player count must be positive, got " + playerCount);
         }
 
         this.playerCount = playerCount;

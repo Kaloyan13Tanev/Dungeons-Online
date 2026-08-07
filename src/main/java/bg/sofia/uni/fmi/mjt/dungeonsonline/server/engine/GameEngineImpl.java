@@ -20,10 +20,12 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +38,8 @@ public class GameEngineImpl implements GameEngine {
 
     private static final int MIN_MINION_LEVEL = 1;
     private static final int MAX_MINION_LEVEL = 5;
+
+    private static final String MINION_NAME = "a minion";
 
     private final GameMap map;
     private final IdGenerator<Integer> treasureIds;
@@ -58,7 +62,7 @@ public class GameEngineImpl implements GameEngine {
     }
 
     @Override
-    public synchronized void join(int playerId) {
+    public synchronized List<GameEvent> join(int playerId) {
         if (players.containsKey(playerId)) {
             throw new IllegalStateException("Player " + playerId + " is already in the game");
         }
@@ -69,22 +73,26 @@ public class GameEngineImpl implements GameEngine {
 
         LOGGER.log(Level.INFO, "Player {0} joined at {1}.",
             new Object[] {playerId, player.getPosition()});
+
+        return List.of(new GameEvent(everyoneExcept(playerId), name(playerId) + " joined the game."));
     }
 
     @Override
-    public synchronized void leave(int playerId) {
+    public synchronized List<GameEvent> leave(int playerId) {
         Player player = players.remove(playerId);
         if (player == null) {
             LOGGER.log(Level.FINE, "Nothing to remove for player {0}.", playerId);
-            return;
+            return List.of();
         }
 
         map.removeActor(playerId);
         LOGGER.log(Level.INFO, "Player {0} left the game.", playerId);
+
+        return List.of(new GameEvent(everyone(), name(playerId) + " left the game."));
     }
 
     @Override
-    public synchronized void move(int playerId, Direction direction) {
+    public synchronized List<GameEvent> move(int playerId, Direction direction) {
         Player player = requirePlayer(playerId);
         Position target = step(player.getPosition(), direction);
         TerrainGrid terrain = map.getTerrainGrid();
@@ -100,30 +108,37 @@ public class GameEngineImpl implements GameEngine {
         player.moveTo(target);
         LOGGER.log(Level.FINE, "Player {0} moved {1} to {2}.",
             new Object[] {playerId, direction, target});
+
+        return List.of();
     }
 
     @Override
-    public synchronized void select(int playerId, int slot) {
+    public synchronized List<GameEvent> select(int playerId, int slot) {
         requirePlayer(playerId).select(slot);
         LOGGER.log(Level.FINE, "Player {0} selected slot {1}.", new Object[] {playerId, slot});
+
+        return List.of();
     }
 
     @Override
-    public synchronized void use(int playerId, Integer targetId) {
+    public synchronized List<GameEvent> use(int playerId, Integer targetId) {
         Player player = requirePlayer(playerId);
         Item selected = player.getBackpack().at(player.getSelectedSlot()).orElse(null);
+        List<GameEvent> events = new ArrayList<>();
 
-        switch (selected) { //TODO: Decide whether method should throw when there's unnecessary id
-            case Spell spell -> cast(player, spell);
+        switch (selected) {
+            case Spell spell -> cast(player, spell, events);
             case Potion potion -> drink(player, potion);
-            case Weapon weapon -> attack(player, requireTarget(player, targetId), weapon);
-            case null -> attack(player, requireTarget(player, targetId), null);
+            case Weapon weapon -> attack(player, requireTarget(player, targetId), weapon, events);
+            case null -> attack(player, requireTarget(player, targetId), null, events);
             default -> throw new IllegalStateException("Unknown item " + selected.name());
         }
+
+        return events;
     }
 
     @Override
-    public synchronized void pickUp(int playerId, int treasureId) {
+    public synchronized List<GameEvent> pickUp(int playerId, int treasureId) {
         Player player = requirePlayer(playerId);
         Treasure treasure = map.getTreasure(treasureId)
             .filter(found -> found.getPosition().equals(player.getPosition()))
@@ -131,14 +146,18 @@ public class GameEngineImpl implements GameEngine {
 
         player.getBackpack().add(treasure.getItem());
         map.removeTreasure(treasureId);
-        player.gainExperience(treasure.getXp());
+
+        List<GameEvent> events = new ArrayList<>();
+        award(player, treasure.getXp(), events);
 
         LOGGER.log(Level.INFO, "Player {0} picked up {1} at {2}.",
             new Object[] {playerId, treasure.getItem().name(), player.getPosition()});
+
+        return events;
     }
 
     @Override
-    public synchronized void give(int playerId, int targetPlayerId) {
+    public synchronized List<GameEvent> give(int playerId, int targetPlayerId) {
         Player player = requirePlayer(playerId);
         Player target = requirePlayerOnTheSameTile(player, targetPlayerId);
 
@@ -151,10 +170,13 @@ public class GameEngineImpl implements GameEngine {
 
         LOGGER.log(Level.INFO, "Player {0} gave {1} to player {2}.",
             new Object[] {playerId, item.name(), targetPlayerId});
+
+        return List.of(new GameEvent(Set.of(targetPlayerId),
+            name(playerId) + " gave you " + item.name() + "."));
     }
 
     @Override
-    public synchronized void drop(int playerId) {
+    public synchronized List<GameEvent> drop(int playerId) {
         Player player = requirePlayer(playerId);
 
         int slot = player.getSelectedSlot();
@@ -166,6 +188,8 @@ public class GameEngineImpl implements GameEngine {
 
         LOGGER.log(Level.INFO, "Player {0} dropped {1} at {2}.",
             new Object[] {playerId, item.name(), player.getPosition()});
+
+        return List.of();
     }
 
     private Player requirePlayer(int playerId) {
@@ -177,7 +201,7 @@ public class GameEngineImpl implements GameEngine {
         return player;
     }
 
-    private void attack(Player player, Actor target, Weapon weapon) {
+    private void attack(Player player, Actor target, Weapon weapon, List<GameEvent> events) {
         int power = player.getStats().getAttack();
 
         if (weapon != null) {
@@ -185,16 +209,16 @@ public class GameEngineImpl implements GameEngine {
             power += weapon.attack();
         }
 
-        strike(player, target, power);
+        strike(player, target, power, events);
     }
 
-    private void cast(Player player, Spell spell) {
+    private void cast(Player player, Spell spell, List<GameEvent> events) {
         requireLevel(player, spell.level(), spell.name());
         player.getStats().spendMana(spell.manaCost());
 
         for (Actor target : map.actorsAt(player.getPosition())) {
             if (target.getId() != player.getId() && target.isAlive()) {
-                strike(player, target, spell.damage());
+                strike(player, target, spell.damage(), events);
             }
         }
     }
@@ -207,30 +231,42 @@ public class GameEngineImpl implements GameEngine {
             new Object[] {player.getId(), potion.name()});
     }
 
-    private void strike(Player player, Actor target, int power) {
+    private void strike(Player player, Actor target, int power, List<GameEvent> events) {
         int damage = Math.max(NO_DAMAGE, power - target.getStats().getDefense() / DEFENSE_EFFICIENCY);
         target.getStats().takeDamage(damage);
 
         LOGGER.log(Level.INFO, "Player {0} hit actor {1} for {2}.",
             new Object[] {player.getId(), target.getId(), damage});
 
+        events.add(new GameEvent(everyone(),
+            name(player.getId()) + " hit " + name(target) + " for " + damage + " damage."));
+
         if (!target.isAlive()) {
-            kill(player, target);
+            kill(player, target, events);
         }
     }
 
-    private void kill(Player player, Actor target) {
+    private void kill(Player player, Actor target, List<GameEvent> events) {
         LOGGER.log(Level.INFO, "Player {0} killed actor {1}.",
             new Object[] {player.getId(), target.getId()});
+
+        events.add(new GameEvent(everyone(), name(target) + " died."));
 
         switch (target) {
             case Minion minion -> {
                 map.removeActor(minion.getId());
-                player.gainExperience(minion.getXpReward());
+                award(player, minion.getXpReward(), events);
                 spawnMinion();
             }
             case Player dead -> respawn(dead);
             default -> throw new IllegalStateException("Unknown actor " + target.getId());
+        }
+    }
+
+    private void award(Player player, int experience, List<GameEvent> events) {
+        if (player.gainExperience(experience) > 0) {
+            events.add(new GameEvent(everyoneExcept(player.getId()),
+                name(player.getId()) + " reached level " + player.getLevel().getValue() + "."));
         }
     }
 
@@ -281,6 +317,25 @@ public class GameEngineImpl implements GameEngine {
 
         LOGGER.log(Level.INFO, "Player {0} dropped {1} on death.",
             new Object[] {player.getId(), item.name()});
+    }
+
+    private Set<Integer> everyone() {
+        return Set.copyOf(players.keySet());
+    }
+
+    private Set<Integer> everyoneExcept(int playerId) {
+        Set<Integer> recipients = new HashSet<>(players.keySet());
+        recipients.remove(playerId);
+
+        return Set.copyOf(recipients);
+    }
+
+    private static String name(int playerId) {
+        return "Player " + playerId;
+    }
+
+    private static String name(Actor actor) {
+        return actor instanceof Player ? name(actor.getId()) : MINION_NAME;
     }
 
     private static void requireLevel(Player player, int level, String name) {

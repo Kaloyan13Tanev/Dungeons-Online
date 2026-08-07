@@ -46,11 +46,13 @@ public class Player extends AbstractActor {
         selectedSlot = slot;
     }
 
-    public void gainExperience(int amount) {
+    public int gainExperience(int amount) {
         int gained = level.addXp(amount);
 
         if (gained > 0) {
             getStats().levelUp(gained);
         }
+
+        return gained;
     }
 }

@@ -2,21 +2,23 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 
+import java.util.List;
+
 public interface GameEngine {
 
-    void join(int playerId);
+    List<GameEvent> join(int playerId);
 
-    void leave(int playerId);
+    List<GameEvent> leave(int playerId);
 
-    void move(int playerId, Direction direction);
+    List<GameEvent> move(int playerId, Direction direction);
 
-    void select(int playerId, int slot);
+    List<GameEvent> select(int playerId, int slot);
 
-    void use(int playerId, Integer targetId);
+    List<GameEvent> use(int playerId, Integer targetId);
 
-    void pickUp(int playerId, int treasureId);
+    List<GameEvent> pickUp(int playerId, int treasureId);
 
-    void give(int playerId, int targetPlayerId);
+    List<GameEvent> give(int playerId, int targetPlayerId);
 
-    void drop(int playerId);
+    List<GameEvent> drop(int playerId);
 }

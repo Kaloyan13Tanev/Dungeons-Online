@@ -55,8 +55,8 @@ public class RequestHandler {
         } catch (InvalidMoveException | TargetNotReachableException | EmptySlotException
                  | FullBackpackException | ItemLevelTooHighException | NotEnoughManaException e) {
             registry.sendTo(playerId, e.getMessage());
-            LOGGER.log(Level.FINE, "Player {0} was refused: {1}",
-                new Object[] {playerId, e.getMessage()});
+            LOGGER.log(Level.WARNING, "Player {0} tried {1} and was refused: {2}",
+                new Object[] {playerId, request, e.getMessage()});
         } catch (RuntimeException e) {
             registry.sendTo(playerId, FAILED_REQUEST);
             LOGGER.log(Level.SEVERE, "Failed to handle " + request + " from player " + playerId + ".", e);

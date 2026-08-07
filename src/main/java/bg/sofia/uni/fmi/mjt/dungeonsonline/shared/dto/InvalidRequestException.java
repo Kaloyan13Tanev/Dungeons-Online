@@ -6,12 +6,12 @@ public class InvalidRequestException extends RuntimeException {
         super(message);
     }
 
-    public InvalidRequestException(String message, Throwable cause) {
-        super(message, cause);
+    public InvalidRequestException(String message, Throwable e) {
+        super(message, e);
     }
 
-    public InvalidRequestException(Throwable cause) {
-        super(cause);
+    public InvalidRequestException(Throwable e) {
+        super(e);
     }
 
 }

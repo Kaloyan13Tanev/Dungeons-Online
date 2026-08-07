@@ -6,12 +6,12 @@ public class FullBackpackException extends RuntimeException {
         super(message);
     }
 
-    public FullBackpackException(String message, Throwable cause) {
-        super(message, cause);
+    public FullBackpackException(String message, Throwable e) {
+        super(message, e);
     }
 
-    public FullBackpackException(Throwable cause) {
-        super(cause);
+    public FullBackpackException(Throwable e) {
+        super(e);
     }
 
 }

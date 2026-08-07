@@ -6,8 +6,12 @@ public class NotEnoughManaException extends RuntimeException {
         super(message);
     }
 
-    public NotEnoughManaException(String message, Throwable cause) {
-        super(message, cause);
+    public NotEnoughManaException(String message, Throwable e) {
+        super(message, e);
+    }
+
+    public NotEnoughManaException(Throwable e) {
+        super(e);
     }
 
 }

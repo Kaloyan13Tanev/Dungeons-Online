@@ -6,13 +6,6 @@ public class Minion extends AbstractActor {
 
     private static final int MIN_LEVEL = 1;
 
-    private static final int BASE_HEALTH = 50;
-    private static final int HEALTH_PER_LEVEL = 20;
-    private static final int BASE_ATTACK = 20;
-    private static final int ATTACK_PER_LEVEL = 10;
-    private static final int BASE_DEFENSE = 10;
-    private static final int DEFENSE_PER_LEVEL = 5;
-
     private static final int BASE_XP_REWARD = 50;
     private static final int XP_REWARD_PER_LEVEL = 5;
 
@@ -37,9 +30,10 @@ public class Minion extends AbstractActor {
             throw new IllegalArgumentException("Level must be at least " + MIN_LEVEL + ", got " + level);
         }
 
-        return new Stats(
-            BASE_HEALTH + level * HEALTH_PER_LEVEL,
-            BASE_ATTACK + level * ATTACK_PER_LEVEL,
-            BASE_DEFENSE + level * DEFENSE_PER_LEVEL);
+        Stats stats = new Stats();
+        stats.levelUp(level - MIN_LEVEL);
+        stats.restore();
+
+        return stats;
     }
 }

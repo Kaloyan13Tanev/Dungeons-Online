@@ -31,7 +31,7 @@ public class GameEngineImpl implements GameEngine {
 
     private static final Logger LOGGER = Logger.getLogger(GameEngineImpl.class.getName());
 
-    private static final int DEFENSE_DIVISOR = 2;
+    private static final int DEFENSE_EFFICIENCY = 2;
     private static final int NO_DAMAGE = 0;
 
     private static final int MIN_MINION_LEVEL = 1;
@@ -45,11 +45,16 @@ public class GameEngineImpl implements GameEngine {
 
     public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
                           IdGenerator<Integer> minionIds, Random random) {
-        this.map = map;
-        this.treasureIds = treasureIds;
-        this.minionIds = minionIds;
-        this.random = random;
-        this.players = new HashMap<>();
+        this(map, treasureIds, minionIds, random, new HashMap<>());
+    }
+
+    public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
+                          IdGenerator<Integer> minionIds, Random random, Map<Integer, Player> players) {
+        this.map = requireNotNull(map, "Map");
+        this.treasureIds = requireNotNull(treasureIds, "Treasure id generator");
+        this.minionIds = requireNotNull(minionIds, "Minion id generator");
+        this.random = requireNotNull(random, "Random");
+        this.players = players;
     }
 
     @Override
@@ -108,7 +113,7 @@ public class GameEngineImpl implements GameEngine {
         Player player = requirePlayer(playerId);
         Item selected = player.getBackpack().at(player.getSelectedSlot()).orElse(null);
 
-        switch (selected) {
+        switch (selected) { //TODO: Decide whether method should throw when there's unnecessary id
             case Spell spell -> cast(player, spell);
             case Potion potion -> drink(player, potion);
             case Weapon weapon -> attack(player, requireTarget(player, targetId), weapon);
@@ -202,7 +207,7 @@ public class GameEngineImpl implements GameEngine {
     }
 
     private void strike(Player player, Actor target, int power) {
-        int damage = Math.max(NO_DAMAGE, power - target.getStats().getDefense() / DEFENSE_DIVISOR);
+        int damage = Math.max(NO_DAMAGE, power - target.getStats().getDefense() / DEFENSE_EFFICIENCY);
         target.getStats().takeDamage(damage);
 
         LOGGER.log(Level.INFO, "Player {0} hit actor {1} for {2}.",
@@ -309,6 +314,14 @@ public class GameEngineImpl implements GameEngine {
         }
 
         return target;
+    }
+
+    private static <T> T requireNotNull(T value, String name) {
+        if (value == null) {
+            throw new IllegalArgumentException(name + " must not be null");
+        }
+
+        return value;
     }
 
     private static Position step(Position from, Direction direction) {

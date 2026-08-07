@@ -118,6 +118,7 @@ public class GameEngineImpl implements GameEngine {
             case Potion potion -> drink(player, potion);
             case Weapon weapon -> attack(player, requireTarget(player, targetId), weapon);
             case null -> attack(player, requireTarget(player, targetId), null);
+            default -> throw new IllegalStateException("Unknown item " + selected.name());
         }
     }
 

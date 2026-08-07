@@ -124,7 +124,7 @@ public class GameEngineImplTest {
 
         engine.join(FIRST_PLAYER_ID);
 
-        assertThrows(IllegalArgumentException.class, () -> engine.join(FIRST_PLAYER_ID),
+        assertThrows(IllegalStateException.class, () -> engine.join(FIRST_PLAYER_ID),
             "GameEngineImpl should throw when a player with the same id already exists");
     }
 

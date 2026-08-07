@@ -5,23 +5,23 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class GameMap {
 
     private final TerrainGrid terrain;
-    private Map<Integer, Actor> actors;
-    private Map<Integer, Treasure> treasures;
+    private final Map<Integer, Actor> actors;
+    private final Map<Integer, Treasure> treasures;
 
     public GameMap(TerrainGrid terrain) {
         this.terrain = terrain;
-        this.actors = new ConcurrentHashMap<>();
-        this.treasures = new ConcurrentHashMap<>();
+        this.actors = new HashMap<>();
+        this.treasures = new HashMap<>();
     }
 
     public GameMap(TerrainGrid terrain, Map<Integer, Actor> actors, Map<Integer, Treasure> treasures) {

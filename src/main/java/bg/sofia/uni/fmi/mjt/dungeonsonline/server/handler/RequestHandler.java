@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngine;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.InvalidMoveException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidRequestException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.RequestMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
@@ -24,10 +26,12 @@ public class RequestHandler {
     private static final String FAILED_REQUEST = "Something went wrong while handling that command.";
 
     private final ConnectionRegistry registry;
+    private final GameEngine engine;
     private final RequestMapper mapper = new RequestMapper();
 
-    public RequestHandler(ConnectionRegistry registry) {
+    public RequestHandler(ConnectionRegistry registry, GameEngine engine) {
         this.registry = registry;
+        this.engine = engine;
     }
 
     public void handle(int playerId, String message) {
@@ -43,6 +47,10 @@ public class RequestHandler {
         LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
         try {
             route(playerId, request);
+        } catch (InvalidMoveException e) {
+            registry.sendTo(playerId, e.getMessage());
+            LOGGER.log(Level.FINE, "Player {0} was refused: {1}",
+                new Object[] {playerId, e.getMessage()});
         } catch (RuntimeException e) {
             registry.sendTo(playerId, FAILED_REQUEST);
             LOGGER.log(Level.SEVERE, "Failed to handle " + request + " from player " + playerId + ".", e);
@@ -51,14 +59,16 @@ public class RequestHandler {
 
     private void route(int playerId, Request request) {
         switch (request) {
-            case MoveRequest(Direction direction) ->
+            case MoveRequest(Direction direction) -> {
+                engine.move(playerId, direction);
                 registry.sendToAll("Player " + playerId + " moved " + direction);
+            }
             case QuitRequest ignored -> registry.unregister(playerId);
-            case SelectRequest ignored -> registry.sendTo(playerId, "Selecting is not implemented yet.");
-            case UseRequest ignored -> registry.sendTo(playerId, "Using items is not implemented yet.");
-            case PickUpRequest ignored -> registry.sendTo(playerId, "Picking up is not implemented yet.");
-            case GiveRequest ignored -> registry.sendTo(playerId, "Giving items is not implemented yet.");
-            case DropRequest ignored -> registry.sendTo(playerId, "Dropping is not implemented yet.");
+            case SelectRequest(int slot) -> engine.select(playerId, slot);
+            case UseRequest(Integer targetId) -> engine.use(playerId, targetId);
+            case PickUpRequest(int treasureId) -> engine.pickUp(playerId, treasureId);
+            case GiveRequest(int targetPlayerId) -> engine.give(playerId, targetPlayerId);
+            case DropRequest ignored -> engine.drop(playerId);
         }
     }
 }

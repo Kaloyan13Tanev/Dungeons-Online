@@ -2,8 +2,9 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.PlayerConnection;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngine;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.RequestHandler;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool.IdPool;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdPool;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -28,13 +29,16 @@ public class GameServer {
     private final IdPool pool;
     private final ConnectionRegistry registry;
     private final RequestHandler handler;
+    private final GameEngine engine;
     private final ServerSocket serverSocket;
     private final AtomicBoolean open = new AtomicBoolean();
 
-    public GameServer(IdPool pool, ConnectionRegistry registry, RequestHandler handler) throws IOException {
+    public GameServer(IdPool pool, ConnectionRegistry registry, RequestHandler handler, GameEngine engine)
+        throws IOException {
         this.pool = pool;
         this.registry = registry;
         this.handler = handler;
+        this.engine = engine;
         this.serverSocket = new ServerSocket(SERVER_PORT);
     }
 
@@ -85,6 +89,7 @@ public class GameServer {
         try (socket) {
             PlayerConnection connection = new PlayerConnection(playerId, socket);
             registry.register(connection);
+            engine.join(playerId);
             connection.send("ACCEPTED " + playerId);
             LOGGER.log(Level.INFO, "Player {0} connected.", playerId);
 
@@ -92,6 +97,7 @@ public class GameServer {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Connection failed for player " + playerId + ".", e);
         } finally {
+            engine.leave(playerId);
             registry.unregister(playerId);
             registry.sendToAll("Player " + playerId + " left the game.");
             pool.release(playerId);

@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.id;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

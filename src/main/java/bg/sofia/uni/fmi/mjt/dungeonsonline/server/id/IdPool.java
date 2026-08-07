@@ -1,10 +1,10 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server.pool;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.id;
 
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class IdPool {
+public class IdPool implements IdGenerator<Optional<Integer>> {
 
     public static final int MIN_ID = 1;
 

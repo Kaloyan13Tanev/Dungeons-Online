@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayerStatsTest {
 
@@ -65,11 +67,19 @@ public class PlayerStatsTest {
     }
 
     @Test
-    void testSpendManaLeavesManaUntouchedWhenThereIsNotEnough() {
-        stats.spendMana(BASE_MANA + 1);
-
+    void testSpendManaThrowsAndLeavesManaUntouchedWhenThereIsNotEnough() {
+        assertThrows(NotEnoughManaException.class, () -> stats.spendMana(BASE_MANA + 1),
+            "Player stats should throw when the cost is higher than the mana that is left");
         assertEquals(BASE_MANA, stats.getMana(),
             "Player stats should not spend any mana when the cost is too high");
+    } //TODO:
+
+    @Test
+    void testHasManaCoversCostsUpToTheManaThatIsLeft() {
+        assertTrue(stats.hasMana(BASE_MANA),
+            "Player stats should report a cost equal to the mana that is left as affordable");
+        assertFalse(stats.hasMana(BASE_MANA + 1),
+            "Player stats should report a cost above the mana that is left as unaffordable");
     }
 
     @Test

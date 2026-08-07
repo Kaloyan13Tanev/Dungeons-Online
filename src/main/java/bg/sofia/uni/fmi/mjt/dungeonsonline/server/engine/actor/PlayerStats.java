@@ -49,11 +49,18 @@ public class PlayerStats extends Stats {
         mana = Math.min(maxMana, mana + amount);
     }
 
+    public boolean hasMana(int amount) {
+        return mana >= amount;
+    }
+
     public void spendMana(int amount) {
         requireNotNegative(amount, "Amount");
 
-        if (mana >= amount) {
-            mana -= amount;
+        if (!hasMana(amount)) {
+            throw new NotEnoughManaException(
+                "Not enough mana, needed " + amount + " but had " + mana);
         }
+
+        mana -= amount;
     }
 }

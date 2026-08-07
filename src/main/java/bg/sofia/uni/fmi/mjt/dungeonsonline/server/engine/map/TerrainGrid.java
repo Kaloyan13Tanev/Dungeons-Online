@@ -10,6 +10,12 @@ public class TerrainGrid {
     private final Terrain[][] grid;
 
     public TerrainGrid(Terrain[][] grid, Position spawnPoint) {
+        requireValidGrid(grid);
+
+        if (spawnPoint == null) {
+            throw new InvalidSpawnPointException("Spawn point must not be null");
+        }
+
         this.rows = grid.length;
         this.cols = grid[0].length;
         this.spawnPoint = spawnPoint;
@@ -53,6 +59,29 @@ public class TerrainGrid {
 
     public boolean isWalkable(Position position) {
         return getTerrain(position).isWalkable();
+    }
+
+    private static void requireValidGrid(Terrain[][] grid) {
+        if (grid == null || grid.length == 0) {
+            throw new IllegalArgumentException("Grid must not be null or empty");
+        }
+
+        if (grid[0] == null || grid[0].length == 0) {
+            throw new IllegalArgumentException("Grid rows must not be null or empty");
+        }
+
+        int cols = grid[0].length;
+        for (Terrain[] row : grid) {
+            if (row == null || row.length != cols) {
+                throw new IllegalArgumentException("Every grid row must hold " + cols + " terrains");
+            }
+
+            for (Terrain terrain : row) {
+                if (terrain == null) {
+                    throw new IllegalArgumentException("Grid must not hold a null terrain");
+                }
+            }
+        }
     }
 
 }

@@ -31,6 +31,46 @@ public class TerrainGridTest {
     }
 
     @Test
+    void testConstructorThrowsIfGridIsNullOrEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> new TerrainGrid(null, SPAWN_POINT),
+            "TerrainGrid should throw when the grid is null");
+        assertThrows(IllegalArgumentException.class, () -> new TerrainGrid(new Terrain[0][0], SPAWN_POINT),
+            "TerrainGrid should throw when the grid has no rows");
+        assertThrows(IllegalArgumentException.class, () -> new TerrainGrid(new Terrain[][] {{}}, SPAWN_POINT),
+            "TerrainGrid should throw when the grid has no columns");
+        assertThrows(IllegalArgumentException.class, () -> new TerrainGrid(new Terrain[][] {null}, SPAWN_POINT),
+            "TerrainGrid should throw when a grid row is null");
+    }
+
+    @Test
+    void testConstructorThrowsIfRowsHaveDifferentLengths() {
+        Terrain[][] jagged = {
+            {G, G, G},
+            {G, G}
+        };
+
+        assertThrows(IllegalArgumentException.class, () -> new TerrainGrid(jagged, SPAWN_POINT),
+            "TerrainGrid should throw when the rows do not have the same length");
+    }
+
+    @Test
+    void testConstructorThrowsIfGridHoldsANullTerrain() {
+        Terrain[][] withNull = {
+            {G, null},
+            {G, G}
+        };
+
+        assertThrows(IllegalArgumentException.class, () -> new TerrainGrid(withNull, SPAWN_POINT),
+            "TerrainGrid should throw when a cell of the grid is null");
+    }
+
+    @Test
+    void testConstructorThrowsIfSpawnPointIsNull() {
+        assertThrows(InvalidSpawnPointException.class, () -> new TerrainGrid(GRID, null),
+            "TerrainGrid should throw when the spawn point is null");
+    }
+
+    @Test
     void testConstructorThrowsIfSpawnPointIsOutOfBounds() {
         assertThrows(InvalidSpawnPointException.class,
             () -> new TerrainGrid(GRID, new Position(GRID.length, 0)),

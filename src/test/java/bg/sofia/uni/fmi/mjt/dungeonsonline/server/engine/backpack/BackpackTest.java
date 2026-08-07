@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.ManaPotion;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.potion.ManaPotion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Weapon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

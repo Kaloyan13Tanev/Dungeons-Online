@@ -8,6 +8,10 @@ public class SequentialIdGenerator implements IdGenerator<Integer> {
         this.currentId = 0;
     }
 
+    public SequentialIdGenerator(int startId) {
+        this.currentId = startId;
+    }
+
     @Override
     public synchronized Integer acquire() {
         return currentId++;

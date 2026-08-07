@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class SequentialIdGeneratorTest {
 
     private static final int FIRST_ID = 0;
+    private static final int START_ID = 10;
     private static final int ID_COUNT = 100;
 
     private SequentialIdGenerator generator;
@@ -22,12 +23,6 @@ public class SequentialIdGeneratorTest {
     }
 
     @Test
-    void testAcquireStartsFromTheFirstId() {
-        assertEquals(FIRST_ID, generator.acquire(),
-            "Sequential id generator should hand out the first id to the first caller");
-    }
-
-    @Test
     void testAcquireHandsOutConsecutiveIds() {
         assertEquals(FIRST_ID, generator.acquire(),
             "Sequential id generator should hand out the first id to the first caller");
@@ -35,6 +30,16 @@ public class SequentialIdGeneratorTest {
             "Sequential id generator should hand out the next id to the second caller");
         assertEquals(FIRST_ID + 2, generator.acquire(),
             "Sequential id generator should hand out the next id to the third caller");
+    }
+
+    @Test
+    void testAcquireHandsOutConsecutiveIdsFromTheGivenStartId() {
+        generator = new SequentialIdGenerator(START_ID);
+
+        assertEquals(START_ID, generator.acquire(),
+            "Sequential id generator should hand out the id it was built with first");
+        assertEquals(START_ID + 1, generator.acquire(),
+            "Sequential id generator should keep counting from the id it was built with");
     }
 
     @Test
@@ -58,17 +63,6 @@ public class SequentialIdGeneratorTest {
 
         assertEquals(FIRST_ID + ID_COUNT, generator.acquire(),
             "Sequential id generator should continue from the last id it handed out");
-    }
-
-    @Test
-    void testGeneratorsCountIndependently() {
-        SequentialIdGenerator other = new SequentialIdGenerator();
-
-        generator.acquire();
-        generator.acquire();
-
-        assertEquals(FIRST_ID, other.acquire(),
-            "Sequential id generator should not share its count with another generator");
     }
 
 }

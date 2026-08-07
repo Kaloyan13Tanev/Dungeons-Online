@@ -9,11 +9,13 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.TerrainGrid;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.RequestHandler;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdPool;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.SequentialIdGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -53,7 +55,11 @@ public class EntryPoint {
     void main() {
         IdPool pool = new IdPool(PLAYER_COUNT);
         ConnectionRegistry registry = new ConnectionRegistry();
-        GameEngine engine = new GameEngineImpl(new GameMap(new TerrainGrid(terrain(), SPAWN_POINT)));
+        GameEngine engine = new GameEngineImpl(
+            new GameMap(new TerrainGrid(terrain(), SPAWN_POINT)),
+            new SequentialIdGenerator(),
+            new SequentialIdGenerator(PLAYER_COUNT + 1),
+            new Random());
         RequestHandler handler = new RequestHandler(registry, engine);
         try {
             GameServer server = new GameServer(pool, registry, handler, engine);

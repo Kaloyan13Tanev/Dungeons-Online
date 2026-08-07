@@ -2,6 +2,11 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngine;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.TargetNotReachableException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.EmptySlotException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.NotEnoughManaException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.FullBackpackException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.ItemLevelTooHighException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.InvalidMoveException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidRequestException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.RequestMapper;
@@ -47,7 +52,8 @@ public class RequestHandler {
         LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
         try {
             route(playerId, request);
-        } catch (InvalidMoveException e) {
+        } catch (InvalidMoveException | TargetNotReachableException | EmptySlotException
+                 | FullBackpackException | ItemLevelTooHighException | NotEnoughManaException e) {
             registry.sendTo(playerId, e.getMessage());
             LOGGER.log(Level.FINE, "Player {0} was refused: {1}",
                 new Object[] {playerId, e.getMessage()});

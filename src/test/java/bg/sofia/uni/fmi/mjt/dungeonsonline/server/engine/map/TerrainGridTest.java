@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.Position;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

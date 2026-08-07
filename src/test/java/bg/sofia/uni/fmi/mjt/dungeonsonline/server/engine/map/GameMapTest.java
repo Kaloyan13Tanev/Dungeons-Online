@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.Position;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Player;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;

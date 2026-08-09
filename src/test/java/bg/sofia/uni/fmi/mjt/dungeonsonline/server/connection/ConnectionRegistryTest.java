@@ -1,5 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ResponseMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.EventResponse;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +26,8 @@ public class ConnectionRegistryTest {
     private static final int FIRST_PLAYER_ID = 1;
     private static final int SECOND_PLAYER_ID = 2;
     private static final int UNKNOWN_PLAYER_ID = 9;
-    private static final String MESSAGE = "Test message";
+    private static final Response RESPONSE = new EventResponse("Test message");
+    private static final String SERIALIZED = new ResponseMapper().serialize(RESPONSE);
 
     @Mock
     private PlayerConnection firstConnection;
@@ -104,11 +108,11 @@ public class ConnectionRegistryTest {
         registry.unregister(FIRST_PLAYER_ID);
 
         registry.register(secondConnection);
-        registry.sendTo(FIRST_PLAYER_ID, MESSAGE);
+        registry.sendTo(FIRST_PLAYER_ID, RESPONSE);
 
         assertEquals(secondConnection, connections.get(FIRST_PLAYER_ID),
             "ConnectionRegistry should let a freed id be registered again");
-        verify(secondConnection).send(MESSAGE);
+        verify(secondConnection).send(SERIALIZED);
     }
 
     @Test
@@ -117,9 +121,9 @@ public class ConnectionRegistryTest {
 
         registry.register(firstConnection);
 
-        registry.sendTo(FIRST_PLAYER_ID, MESSAGE);
+        registry.sendTo(FIRST_PLAYER_ID, RESPONSE);
 
-        verify(firstConnection).send(MESSAGE);
+        verify(firstConnection).send(SERIALIZED);
     }
 
     @Test
@@ -128,9 +132,9 @@ public class ConnectionRegistryTest {
 
         registry.register(firstConnection);
 
-        registry.sendTo(UNKNOWN_PLAYER_ID, MESSAGE);
+        registry.sendTo(UNKNOWN_PLAYER_ID, RESPONSE);
 
-        verify(firstConnection, never()).send(MESSAGE);
+        verify(firstConnection, never()).send(SERIALIZED);
     }
 
     @Test
@@ -141,24 +145,10 @@ public class ConnectionRegistryTest {
         registry.register(firstConnection);
         registry.register(secondConnection);
 
-        registry.sendTo(List.of(FIRST_PLAYER_ID, UNKNOWN_PLAYER_ID), MESSAGE);
+        registry.sendTo(List.of(FIRST_PLAYER_ID, UNKNOWN_PLAYER_ID), RESPONSE);
 
-        verify(firstConnection).send(MESSAGE);
-        verify(secondConnection, never()).send(MESSAGE);
-    }
-
-    @Test
-    void testSendToAllDeliversToEveryRegisteredPlayer() {
-        when(firstConnection.playerId()).thenReturn(FIRST_PLAYER_ID);
-        when(secondConnection.playerId()).thenReturn(SECOND_PLAYER_ID);
-
-        registry.register(firstConnection);
-        registry.register(secondConnection);
-
-        registry.sendToAll(MESSAGE);
-
-        verify(firstConnection).send(MESSAGE);
-        verify(secondConnection).send(MESSAGE);
+        verify(firstConnection).send(SERIALIZED);
+        verify(secondConnection, never()).send(SERIALIZED);
     }
 
 }

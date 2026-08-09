@@ -1,5 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ResponseMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.Response;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,6 +13,7 @@ public class ConnectionRegistry {
 
     private static final Logger LOGGER = Logger.getLogger(ConnectionRegistry.class.getName());
 
+    private final ResponseMapper mapper = new ResponseMapper();
     private final Map<Integer, PlayerConnection> connections;
 
     public ConnectionRegistry() {
@@ -47,7 +51,19 @@ public class ConnectionRegistry {
             new Object[] {playerId, connections.size()});
     }
 
-    public void sendTo(int playerId, String message) {
+    public void sendTo(int playerId, Response response) {
+        send(playerId, mapper.serialize(response));
+    }
+
+    public void sendTo(Collection<Integer> playerIds, Response response) {
+        String message = mapper.serialize(response);
+
+        for (int playerId : playerIds) {
+            send(playerId, message);
+        }
+    }
+
+    private void send(int playerId, String message) {
         PlayerConnection connection = connections.get(playerId);
         if (connection == null) {
             LOGGER.log(Level.FINE, "Dropped a message for player {0}, who is no longer connected.", playerId);
@@ -57,15 +73,4 @@ public class ConnectionRegistry {
         connection.send(message);
     }
 
-    public void sendTo(Collection<Integer> playerIds, String message) {
-        for (int playerId : playerIds) {
-            sendTo(playerId, message);
-        }
-    }
-
-    public void sendToAll(String message) {
-        for (PlayerConnection connection : connections.values()) {
-            connection.send(message);
-        }
-    }
 }

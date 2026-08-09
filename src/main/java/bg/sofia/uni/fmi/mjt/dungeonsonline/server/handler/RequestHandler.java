@@ -2,12 +2,9 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngine;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.TargetNotReachableException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.EmptySlotException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.NotEnoughManaException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.FullBackpackException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.ItemLevelTooHighException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.InvalidMoveException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEvent;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidRequestException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.RequestMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
@@ -19,7 +16,12 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.QuitRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.SelectRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.UseRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ErrorResponse;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.EventResponse;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.StateResponse;
 
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,37 +46,50 @@ public class RequestHandler {
         try {
             request = mapper.deserialize(message);
         } catch (InvalidRequestException e) {
-            registry.sendTo(playerId, UNREADABLE_REQUEST);
+            registry.sendTo(playerId, new ErrorResponse(UNREADABLE_REQUEST));
             LOGGER.log(Level.WARNING, "Failed to deserialize a request from player " + playerId + ".", e);
             return;
         }
 
         LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
         try {
-            route(playerId, request);
-        } catch (InvalidMoveException | TargetNotReachableException | EmptySlotException
-                 | FullBackpackException | ItemLevelTooHighException | NotEnoughManaException e) {
-            registry.sendTo(playerId, e.getMessage());
+            distribute(route(playerId, request));
+        } catch (InvalidActionException e) {
+            registry.sendTo(playerId, new ErrorResponse(e.getMessage()));
             LOGGER.log(Level.WARNING, "Player {0} tried {1} and was refused: {2}",
                 new Object[] {playerId, request, e.getMessage()});
         } catch (RuntimeException e) {
-            registry.sendTo(playerId, FAILED_REQUEST);
+            registry.sendTo(playerId, new ErrorResponse(FAILED_REQUEST));
             LOGGER.log(Level.SEVERE, "Failed to handle " + request + " from player " + playerId + ".", e);
         }
     }
 
-    private void route(int playerId, Request request) {
-        switch (request) {
-            case MoveRequest(Direction direction) -> {
-                engine.move(playerId, direction);
-                registry.sendToAll("Player " + playerId + " moved " + direction);
-            }
-            case QuitRequest ignored -> registry.unregister(playerId);
+    public void distribute(List<GameEvent> events) {
+        for (GameEvent event : events) {
+            registry.sendTo(event.recipients(), new EventResponse(event.message()));
+        }
+
+        for (Map.Entry<Integer, GameStateDTO> state : engine.stateForAll().entrySet()) {
+            registry.sendTo(state.getKey(), new StateResponse(state.getValue()));
+        }
+    }
+
+    private List<GameEvent> route(int playerId, Request request) {
+        return switch (request) {
+            case MoveRequest(Direction direction) -> engine.move(playerId, direction);
             case SelectRequest(int slot) -> engine.select(playerId, slot);
             case UseRequest(Integer targetId) -> engine.use(playerId, targetId);
             case PickUpRequest(int treasureId) -> engine.pickUp(playerId, treasureId);
             case GiveRequest(int targetPlayerId) -> engine.give(playerId, targetPlayerId);
             case DropRequest ignored -> engine.drop(playerId);
-        }
+            case QuitRequest ignored -> quit(playerId);
+        };
     }
+
+    private List<GameEvent> quit(int playerId) {
+        registry.unregister(playerId);
+
+        return List.of();
+    }
+
 }

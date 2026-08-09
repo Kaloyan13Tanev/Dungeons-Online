@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestType;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-public class RequestMapper {
+public class RequestMapper implements Mapper<Request, RequestDTO> {
 
     private static final Gson GSON = new Gson();
 
@@ -17,7 +17,8 @@ public class RequestMapper {
         return toRequest(fromJson(json));
     }
 
-    private RequestDTO toDTO(Request request) {
+    @Override
+    public RequestDTO toDTO(Request request) {
         return new RequestDTO(RequestType.of(request), GSON.toJson(request));
     }
 
@@ -51,4 +52,5 @@ public class RequestMapper {
             throw new InvalidRequestException("Invalid JSON", e);
         }
     }
+
 }

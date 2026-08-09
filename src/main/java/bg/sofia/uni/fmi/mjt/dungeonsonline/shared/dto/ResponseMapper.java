@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ResponseType;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-public class ResponseMapper {
+public class ResponseMapper implements Mapper<Response, ResponseDTO> {
 
     private static final Gson GSON = new Gson();
 
@@ -17,7 +17,8 @@ public class ResponseMapper {
         return toResponse(fromJson(json));
     }
 
-    private ResponseDTO toDTO(Response response) {
+    @Override
+    public ResponseDTO toDTO(Response response) {
         return new ResponseDTO(ResponseType.of(response), GSON.toJson(response));
     }
 
@@ -51,4 +52,5 @@ public class ResponseMapper {
             throw new InvalidResponseException("Invalid JSON", e);
         }
     }
+
 }

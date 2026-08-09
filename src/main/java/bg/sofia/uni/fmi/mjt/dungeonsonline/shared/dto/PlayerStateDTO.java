@@ -13,4 +13,7 @@ public record PlayerStateDTO(
     int attack,
     int defense,
     List<ItemDTO> backpack,
-    int selectedSlot) { }
+    int selectedSlot
+) {
+
+}

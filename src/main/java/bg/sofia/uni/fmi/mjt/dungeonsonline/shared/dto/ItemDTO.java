@@ -1,3 +1,5 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
 
-public record ItemDTO(String kind, String name, int level, int power, int manaCost) { }
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ItemKind;
+
+public record ItemDTO(ItemKind kind, String name, int level, int power, int manaCost) { }

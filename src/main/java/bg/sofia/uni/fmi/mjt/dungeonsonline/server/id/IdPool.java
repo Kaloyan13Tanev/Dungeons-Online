@@ -46,4 +46,5 @@ public class IdPool implements IdGenerator<Optional<Integer>> {
     private int maxId() {
         return MIN_ID + playerCount - 1;
     }
+
 }

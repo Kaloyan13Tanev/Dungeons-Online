@@ -90,4 +90,5 @@ public class PlayerConnection implements AutoCloseable {
             LOGGER.log(Level.WARNING, "Failed to close socket for player " + playerId, e);
         }
     }
+
 }

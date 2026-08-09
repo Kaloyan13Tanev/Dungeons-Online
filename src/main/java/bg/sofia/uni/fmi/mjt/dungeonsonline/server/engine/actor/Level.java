@@ -58,4 +58,5 @@ public class Level {
 
         return gained;
     }
+
 }

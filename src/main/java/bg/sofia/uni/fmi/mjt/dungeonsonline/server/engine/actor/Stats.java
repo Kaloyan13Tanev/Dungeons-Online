@@ -85,4 +85,5 @@ public class Stats {
             throw new IllegalArgumentException(name + " must not be negative, got " + value);
         }
     }
+
 }

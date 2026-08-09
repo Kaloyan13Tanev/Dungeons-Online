@@ -36,4 +36,5 @@ public class Minion extends AbstractActor {
 
         return stats;
     }
+
 }

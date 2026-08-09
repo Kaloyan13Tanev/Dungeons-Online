@@ -38,4 +38,5 @@ public class Treasure {
     public int getXp() {
         return xp;
     }
+
 }

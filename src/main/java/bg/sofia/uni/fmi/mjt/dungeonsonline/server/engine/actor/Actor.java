@@ -11,4 +11,5 @@ public interface Actor {
     Position getPosition();
 
     boolean isAlive();
+
 }

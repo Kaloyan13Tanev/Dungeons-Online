@@ -8,4 +8,5 @@ public class DroppedTreasure extends Treasure {
     public DroppedTreasure(int id, Position position, Item item) {
         super(id, position, item, 0);
     }
+
 }

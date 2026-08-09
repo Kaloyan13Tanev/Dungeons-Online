@@ -86,4 +86,5 @@ public class Backpack {
                 "Slot must be in [0, " + slots.length + "), got " + slot);
         }
     }
+
 }

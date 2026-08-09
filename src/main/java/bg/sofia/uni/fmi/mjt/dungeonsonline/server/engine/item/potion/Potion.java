@@ -6,4 +6,5 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
 public sealed interface Potion extends Item permits HealthPotion, ManaPotion {
 
     void applyTo(PlayerStats stats);
+
 }

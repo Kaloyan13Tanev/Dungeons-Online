@@ -112,4 +112,5 @@ public class GameMap {
 
         return Optional.of(free.get(random.nextInt(free.size())));
     }
+
 }

@@ -25,4 +25,5 @@ public enum ResponseType {
             case ErrorResponse ignored -> ERROR;
         };
     }
+
 }

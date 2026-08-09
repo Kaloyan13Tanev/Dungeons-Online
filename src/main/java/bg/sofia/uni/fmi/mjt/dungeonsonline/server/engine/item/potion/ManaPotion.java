@@ -8,4 +8,5 @@ public record ManaPotion(String name, int mana) implements Potion {
     public void applyTo(PlayerStats stats) {
         stats.restoreMana(mana);
     }
+
 }

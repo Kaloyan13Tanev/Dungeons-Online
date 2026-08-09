@@ -14,4 +14,5 @@ public enum Terrain {
     public boolean isWalkable() {
         return walkable;
     }
+
 }

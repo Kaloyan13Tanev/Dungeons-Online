@@ -8,4 +8,5 @@ public record HealthPotion(String name, int healing) implements Potion {
     public void applyTo(PlayerStats stats) {
         stats.heal(healing);
     }
+
 }

@@ -16,4 +16,5 @@ public class SequentialIdGenerator implements IdGenerator<Integer> {
     public synchronized Integer acquire() {
         return currentId++;
     }
+
 }

@@ -38,4 +38,5 @@ public abstract class AbstractActor implements Actor {
     public void moveTo(Position position) {
         this.position = position;
     }
+
 }

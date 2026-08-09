@@ -31,4 +31,5 @@ public enum RequestType {
             case QuitRequest ignored -> QUIT;
         };
     }
+
 }

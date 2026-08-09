@@ -24,6 +24,12 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
+            <version>3.30.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
             <version>3.30.16</version>
         </dependency>
 

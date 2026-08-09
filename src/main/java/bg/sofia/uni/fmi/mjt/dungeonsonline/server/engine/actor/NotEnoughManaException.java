@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
 
-public class NotEnoughManaException extends RuntimeException {
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
+
+public class NotEnoughManaException extends InvalidActionException {
 
     public NotEnoughManaException(String message) {
         super(message);

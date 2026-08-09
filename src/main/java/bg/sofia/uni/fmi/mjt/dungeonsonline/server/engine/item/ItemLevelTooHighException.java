@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item;
 
-public class ItemLevelTooHighException extends RuntimeException {
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
+
+public class ItemLevelTooHighException extends InvalidActionException {
 
     public ItemLevelTooHighException(String message) {
         super(message);

@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack;
 
-public class EmptySlotException extends RuntimeException {
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
+
+public class EmptySlotException extends InvalidActionException {
 
     public EmptySlotException(String message) {
         super(message);

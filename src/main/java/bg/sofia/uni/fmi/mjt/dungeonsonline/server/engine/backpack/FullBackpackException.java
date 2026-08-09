@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack;
 
-public class FullBackpackException extends RuntimeException {
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
+
+public class FullBackpackException extends InvalidActionException {
 
     public FullBackpackException(String message) {
         super(message);

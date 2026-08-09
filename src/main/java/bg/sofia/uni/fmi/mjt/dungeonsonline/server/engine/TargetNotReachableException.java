@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine;
 
-public class TargetNotReachableException extends RuntimeException {
+public class TargetNotReachableException extends InvalidActionException {
 
     public TargetNotReachableException(String message) {
         super(message);

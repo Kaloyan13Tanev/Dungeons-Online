@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map;
 
-public class InvalidMoveException extends RuntimeException {
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
+
+public class InvalidMoveException extends InvalidActionException {
 
     public InvalidMoveException(String message) {
         super(message);

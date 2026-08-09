@@ -58,9 +58,10 @@ public class PlayerStats extends Stats {
 
         if (!hasMana(amount)) {
             throw new NotEnoughManaException(
-                "Not enough mana, needed " + amount + " but had " + mana);
+                "Not enough mana! You need " + amount + " but have " + mana + ".");
         }
 
         mana -= amount;
     }
+
 }

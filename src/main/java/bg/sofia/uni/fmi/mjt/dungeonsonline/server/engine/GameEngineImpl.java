@@ -13,9 +13,12 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.GameMap;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.InvalidMoveException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.TerrainGrid;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.GameStateProducer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.DroppedTreasure;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdGenerator;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TerrainDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ public class GameEngineImpl implements GameEngine {
     private final IdGenerator<Integer> minionIds;
     private final Random random;
     private final Map<Integer, Player> players;
+    private final GameStateProducer stateProducer = new GameStateProducer();
 
     public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
                           IdGenerator<Integer> minionIds, Random random) {
@@ -59,6 +63,38 @@ public class GameEngineImpl implements GameEngine {
         this.minionIds = requireNotNull(minionIds, "Minion id generator");
         this.random = requireNotNull(random, "Random");
         this.players = players;
+    }
+
+    @Override
+    public synchronized void populate(List<MinionSpawn> minions, List<TreasureSpawn> treasures) {
+        for (MinionSpawn spawn : minions) {
+            requireWalkable(spawn.position());
+            map.addActor(new Minion(minionIds.acquire(), spawn.level(), spawn.position()));
+        }
+
+        for (TreasureSpawn spawn : treasures) {
+            requireWalkable(spawn.position());
+            map.addTreasure(new Treasure(treasureIds.acquire(), spawn.position(), spawn.item()));
+        }
+
+        LOGGER.log(Level.INFO, "Populated the map with {0} minions and {1} treasures.",
+            new Object[] {minions.size(), treasures.size()});
+    }
+
+    private void requireWalkable(Position position) {
+        if (!map.getTerrainGrid().isInside(position) || !map.getTerrainGrid().isWalkable(position)) {
+            throw new IllegalArgumentException("Cannot place anything at " + position);
+        }
+    }
+
+    @Override
+    public synchronized TerrainDTO terrain() {
+        return stateProducer.terrainOf(map);
+    }
+
+    @Override
+    public synchronized Map<Integer, GameStateDTO> stateForAll() {
+        return stateProducer.stateForAll(map, players.values());
     }
 
     @Override
@@ -346,7 +382,9 @@ public class GameEngineImpl implements GameEngine {
 
     private Actor requireTarget(Player player, Integer targetId) {
         if (targetId == null) {
-            throw new TargetNotReachableException("Choose a target first!");
+            throw new TargetNotReachableException(hasTargets(player)
+                ? "Choose a target first!"
+                : "There is nothing to attack here!");
         }
 
         if (targetId == player.getId()) {
@@ -357,6 +395,16 @@ public class GameEngineImpl implements GameEngine {
             .filter(Actor::isAlive)
             .filter(actor -> actor.getPosition().equals(player.getPosition()))
             .orElseThrow(() -> new TargetNotReachableException("That target is not here anymore!"));
+    }
+
+    private boolean hasTargets(Player player) {
+        for (Actor actor : map.actorsAt(player.getPosition())) {
+            if (actor.getId() != player.getId() && actor.isAlive()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Player requirePlayerOnTheSameTile(Player player, int targetPlayerId) {
@@ -388,4 +436,5 @@ public class GameEngineImpl implements GameEngine {
             case RIGHT -> new Position(from.row(), from.col() + 1);
         };
     }
+
 }

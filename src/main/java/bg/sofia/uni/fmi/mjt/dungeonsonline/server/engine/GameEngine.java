@@ -1,10 +1,19 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TerrainDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GameEngine {
+
+    void populate(List<MinionSpawn> minions, List<TreasureSpawn> treasures);
+
+    TerrainDTO terrain();
+
+    Map<Integer, GameStateDTO> stateForAll();
 
     List<GameEvent> join(int playerId);
 
@@ -21,4 +30,5 @@ public interface GameEngine {
     List<GameEvent> give(int playerId, int targetPlayerId);
 
     List<GameEvent> drop(int playerId);
+
 }

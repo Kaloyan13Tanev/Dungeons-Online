@@ -13,14 +13,13 @@ public class Player extends AbstractActor {
     private int selectedSlot;
 
     public Player(int id, Position position) {
-        super(id, new PlayerStats(), position);
-
-        this.backpack = new Backpack();
-        this.level = new Level();
-        this.selectedSlot = FIRST_SLOT;
+        this(id, position, new PlayerStats(), new Level(), new Backpack());
     }
 
     public Player(int id, Position position, PlayerStats stats, Level level, Backpack backpack) {
+        if (id < 1) {
+            throw new IllegalArgumentException("Id must be positive, got " + id);
+        }
         super(id, stats, position);
 
         this.backpack = backpack;

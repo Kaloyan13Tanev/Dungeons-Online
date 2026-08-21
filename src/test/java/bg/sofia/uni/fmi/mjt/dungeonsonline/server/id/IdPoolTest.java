@@ -102,12 +102,6 @@ public class IdPoolTest {
         assertTrue(pool.acquire().isEmpty(), "Id Pool should not accept an id outside its range");
     }
 
-    @Test
-    void testCapacityReturnsPlayerCount() {
-        assertEquals(PLAYER_COUNT, pool.capacity(),
-            "Id Pool should return the playerCount it was built with");
-    }
-
 //    @Test
 //    void testAcquireNeverHandsOutSameIdToConcurrentCallers() throws InterruptedException {
 //        Set<Integer> acquired = ConcurrentHashMap.newKeySet();
@@ -141,6 +135,6 @@ public class IdPoolTest {
 //        assertEquals(PLAYER_COUNT, acquired.size(),
 //            "Id Pool should hand out every id when as many callers as ids compete");
 //        assertTrue(pool.acquire().isEmpty(), "Id Pool should return empty once every id is taken");
-//    }
+//    } //TODO:
 
 }

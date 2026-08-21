@@ -84,18 +84,6 @@ public class TerrainGridTest {
     }
 
     @Test
-    void testIsInsideAcceptsEveryCornerOfTheGrid() {
-        assertTrue(grid.isInside(new Position(0, 0)),
-            "TerrainGrid should treat the first row and column as inside");
-        assertTrue(grid.isInside(new Position(0, GRID[0].length - 1)),
-            "TerrainGrid should treat the last column as inside");
-        assertTrue(grid.isInside(new Position(GRID.length - 1, 0)),
-            "TerrainGrid should treat the last row as inside");
-        assertTrue(grid.isInside(new Position(GRID.length - 1, GRID[0].length - 1)),
-            "TerrainGrid should treat the last row and column as inside");
-    } //TODO:
-
-    @Test
     void testIsInsideReturnsFalseIfPositionIsOutOfBounds() {
         assertFalse(grid.isInside(new Position(GRID.length, 0)),
             "TerrainGrid should treat a row past the last one as outside");

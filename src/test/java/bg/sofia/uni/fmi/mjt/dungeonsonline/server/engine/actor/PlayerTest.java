@@ -10,8 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +24,6 @@ public class PlayerTest {
     private static final int SECOND_SLOT = 1;
 
     private static final int XP_GAIN = 50;
-    private static final int NO_LEVELS = 0;
     private static final int LEVELS_GAINED = 2;
 
     @Mock
@@ -41,6 +38,14 @@ public class PlayerTest {
     @BeforeEach
     void setUp() {
         player = new Player(PLAYER_ID, START, stats, level, backpack);
+    }
+
+    @Test
+    void testConstructorThrowsWhenTheIdIsNotPositive() {
+        assertThrows(IllegalArgumentException.class, () -> new Player(0, START, stats, level, backpack),
+            "Player should throw when the id is zero");
+        assertThrows(IllegalArgumentException.class, () -> new Player(-1, START, stats, level, backpack),
+            "Player should throw when the id is negative");
     }
 
     @Test
@@ -84,6 +89,13 @@ public class PlayerTest {
 
         assertEquals(LEVELS_GAINED, player.gainExperience(XP_GAIN),
             "Player should report the levels the gain covered");
+    }
+
+    @Test
+    void testIsAliveAsksTheStats() {
+        player.isAlive();
+
+        verify(stats).isAlive();
     }
 
 }

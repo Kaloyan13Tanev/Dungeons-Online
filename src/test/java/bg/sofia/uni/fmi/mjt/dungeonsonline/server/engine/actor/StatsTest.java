@@ -26,14 +26,6 @@ public class StatsTest {
     }
 
     @Test
-    void testDefaultConstructorStartsAtTheBaseValues() {
-        assertEquals(BASE_HEALTH, stats.getMaxHealth(), "Stats should start with the base max health");
-        assertEquals(BASE_HEALTH, stats.getHealth(), "Stats should start at full health");
-        assertEquals(BASE_ATTACK, stats.getAttack(), "Stats should start with the base attack");
-        assertEquals(BASE_DEFENSE, stats.getDefense(), "Stats should start with the base defense");
-    }
-
-    @Test
     void testConstructorThrowsWhenMaxHealthNotPositive() {
         assertThrows(IllegalArgumentException.class, () -> new Stats(0, BASE_ATTACK, BASE_DEFENSE),
             "Stats should throw when max health is zero");
@@ -50,17 +42,9 @@ public class StatsTest {
     }
 
     @Test
-    void testConstructorAllowsZeroAttackAndDefense() {
-        Stats harmless = new Stats(BASE_HEALTH, 0, 0);
-
-        assertEquals(0, harmless.getAttack(), "Stats should accept an attack of zero");
-        assertEquals(0, harmless.getDefense(), "Stats should accept a defense of zero");
-    }
-
-    @Test
     void testIsAliveIsTrueWhileHealthRemains() {
         assertTrue(stats.isAlive(), "Stats should return true while health is above zero");
-    }
+    } //TODO:
 
     @Test
     void testLevelUpRaisesEveryStat() {

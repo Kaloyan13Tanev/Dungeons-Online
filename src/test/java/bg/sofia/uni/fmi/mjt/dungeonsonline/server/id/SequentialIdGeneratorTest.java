@@ -53,7 +53,7 @@ public class SequentialIdGeneratorTest {
 
         assertEquals(ID_COUNT, acquired.size(),
             "Sequential id generator should hand out one id per call");
-    }
+    } //TODO:
 
     @Test
     void testAcquireKeepsCountingAfterManyIds() {
@@ -63,6 +63,6 @@ public class SequentialIdGeneratorTest {
 
         assertEquals(FIRST_ID + ID_COUNT, generator.acquire(),
             "Sequential id generator should continue from the last id it handed out");
-    }
+    } //TODO:
 
 }

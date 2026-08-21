@@ -72,7 +72,7 @@ public class GameEngineImplTest {
     private TerrainGrid terrain;
     @Mock
     private Actor target;
-
+    @Mock
     private Stats targetStats;
 
     private SequentialIdGenerator treasureIds;

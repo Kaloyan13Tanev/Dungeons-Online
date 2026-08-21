@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -23,13 +22,9 @@ public class PlayerConnection implements AutoCloseable {
     private final AtomicBoolean open;
 
     public PlayerConnection(int playerId, Socket socket) throws IOException {
-        this.playerId = playerId;
-        this.socket = socket;
-        this.reader = new BufferedReader(
-            new InputStreamReader(socket.getInputStream()));
-        this.writer = new BufferedWriter(
-            new OutputStreamWriter(socket.getOutputStream()));
-        this.open = new AtomicBoolean(true);
+        this(playerId, socket,
+            new BufferedReader(new InputStreamReader(socket.getInputStream())),
+            new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
     }
 
     public PlayerConnection(int playerId, Socket socket, BufferedReader reader, BufferedWriter writer) {

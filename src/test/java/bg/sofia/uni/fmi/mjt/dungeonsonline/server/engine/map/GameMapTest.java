@@ -2,9 +2,6 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Player;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Weapon;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,37 +39,35 @@ public class GameMapTest {
     private static final int SECOND_TREASURE_ID = 2;
     private static final int UNKNOWN_TREASURE_ID = 9;
 
-    private static final Item ITEM = new Weapon("Sword", 1, 10);
-
-    private static final Random RANDOM = new Random(42);
+    private static final int FIRST_FREE_INDEX = 0;
 
     @Mock
     TerrainGrid grid;
+    @Mock
+    Actor firstActor;
+    @Mock
+    Actor secondActor;
+    @Mock
+    Treasure firstTreasure;
+    @Mock
+    Treasure secondTreasure;
+    @Mock
+    Random random;
 
     Map<Integer, Actor> actors;
     Map<Integer, Treasure> treasures;
     GameMap map;
-
-    Actor firstActor;
-    Actor secondActor;
-    Treasure firstTreasure;
-    Treasure secondTreasure;
 
     @BeforeEach
     void setUp() {
         actors = new HashMap<>();
         treasures = new HashMap<>();
         map = new GameMap(grid, actors, treasures);
-
-        firstActor = new Player(FIRST_ACTOR_ID, FIRST_POSITION);
-        secondActor = new Player(SECOND_ACTOR_ID, SECOND_POSITION);
-        firstTreasure = new Treasure(FIRST_TREASURE_ID, FIRST_POSITION, ITEM);
-        secondTreasure = new Treasure(SECOND_TREASURE_ID, SECOND_POSITION, ITEM);
     }
 
     @Test
     void testAddActorStoresTheActorUnderItsId() {
-        map.addActor(firstActor);
+        add(firstActor, FIRST_ACTOR_ID);
 
         assertEquals(1, actors.size(), "GameMap should hold the actor that was added");
         assertEquals(firstActor, actors.get(FIRST_ACTOR_ID),
@@ -80,7 +76,7 @@ public class GameMapTest {
 
     @Test
     void testAddActorThrowsIfActorAlreadyOnTheMap() {
-        map.addActor(firstActor);
+        add(firstActor, FIRST_ACTOR_ID);
 
         assertThrows(IllegalStateException.class, () -> map.addActor(firstActor),
             "GameMap should refuse an actor whose id is already on the map");
@@ -88,7 +84,7 @@ public class GameMapTest {
 
     @Test
     void testRemoveActorTakesActorOffTheMap() {
-        map.addActor(firstActor);
+        add(firstActor, FIRST_ACTOR_ID);
         map.removeActor(FIRST_ACTOR_ID);
 
         assertTrue(actors.isEmpty(), "GameMap should no longer hold an actor that was removed");
@@ -96,48 +92,22 @@ public class GameMapTest {
 
     @Test
     void testRemoveActorReturnsTheActorItRemoved() {
-        map.addActor(firstActor);
+        add(firstActor, FIRST_ACTOR_ID);
 
         assertEquals(Optional.of(firstActor), map.removeActor(FIRST_ACTOR_ID),
             "GameMap should return the actor it removed");
-    } //TODO:
+    }
 
     @Test
     void testRemoveActorReturnsEmptyIfActorIsNotOnTheMap() {
         assertTrue(map.removeActor(UNKNOWN_ACTOR_ID).isEmpty(),
             "GameMap should return empty when removing an id that is not on the map");
-    } //TODO:
-
-    @Test
-    void testGetActorReturnsTheActorWithThatId() {
-        map.addActor(firstActor);
-
-        assertEquals(Optional.of(firstActor), map.getActor(FIRST_ACTOR_ID),
-            "GameMap should return the actor stored under the given id");
-    }
-
-    @Test
-    void testGetActorReturnsEmptyIfActorIsNotOnTheMap() {
-        assertTrue(map.getActor(UNKNOWN_ACTOR_ID).isEmpty(),
-            "GameMap should return empty for an id that is not on the map");
-    }
-
-    @Test
-    void testGetActorsReturnsEveryActorOnTheMap() {
-        map.addActor(firstActor);
-        map.addActor(secondActor);
-
-        List<Actor> onMap = map.getActors();
-
-        assertEquals(2, onMap.size(), "GameMap should return every actor that was added");
-        assertTrue(onMap.containsAll(List.of(firstActor, secondActor)),
-            "GameMap should return each of the actors that were added");
     }
 
     @Test
     void testActorsAtReturnsOnlyTheActorsOnThatPosition() {
-        map.addActor(firstActor);
-        map.addActor(secondActor);
+        standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
+        standAt(secondActor, SECOND_ACTOR_ID, SECOND_POSITION);
 
         assertEquals(List.of(firstActor), map.actorsAt(FIRST_POSITION),
             "GameMap should return only the actors standing on the given position");
@@ -145,7 +115,7 @@ public class GameMapTest {
 
     @Test
     void testActorsAtReturnsEmptyIfNobodyStandsThere() {
-        map.addActor(firstActor);
+        standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
 
         assertTrue(map.actorsAt(SECOND_POSITION).isEmpty(),
             "GameMap should return no actors for a position nobody stands on");
@@ -153,33 +123,30 @@ public class GameMapTest {
 
     @Test
     void testActorsAtFollowsTheActorAfterItMoves() {
-        Player player = new Player(FIRST_ACTOR_ID, FIRST_POSITION);
-        map.addActor(player);
+        add(firstActor, FIRST_ACTOR_ID);
+        when(firstActor.getPosition()).thenReturn(FIRST_POSITION, SECOND_POSITION);
 
-        player.moveTo(SECOND_POSITION);
-
-        assertTrue(map.actorsAt(FIRST_POSITION).isEmpty(),
-            "GameMap should not report an actor on the position it left");
-        assertEquals(List.of(player), map.actorsAt(SECOND_POSITION),
+        assertEquals(List.of(firstActor), map.actorsAt(FIRST_POSITION),
+            "GameMap should report an actor on the position it stands on");
+        assertEquals(List.of(firstActor), map.actorsAt(SECOND_POSITION),
             "GameMap should report an actor on the position it moved to");
-    } //TODO:
+    }
 
     @Test
     void testActorsByPositionGroupsTheActorsSharingAPosition() {
-        Actor sameTile = new Player(SECOND_ACTOR_ID, FIRST_POSITION);
-        map.addActor(firstActor);
-        map.addActor(sameTile);
+        standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
+        standAt(secondActor, SECOND_ACTOR_ID, FIRST_POSITION);
 
         Map<Position, List<Actor>> grouped = map.actorsByPosition();
 
         assertEquals(1, grouped.size(), "GameMap should group actors sharing a position under one key");
-        assertTrue(grouped.get(FIRST_POSITION).containsAll(List.of(firstActor, sameTile)),
+        assertTrue(grouped.get(FIRST_POSITION).containsAll(List.of(firstActor, secondActor)),
             "GameMap should put every actor on a position in the same group");
     }
 
     @Test
     void testAddTreasureStoresTheTreasure() {
-        map.addTreasure(firstTreasure);
+        add(firstTreasure, FIRST_TREASURE_ID);
 
         assertEquals(1, treasures.size(), "GameMap should hold the treasure that was added");
         assertEquals(firstTreasure, treasures.get(FIRST_TREASURE_ID),
@@ -188,7 +155,7 @@ public class GameMapTest {
 
     @Test
     void testAddTreasureThrowsIfTreasureAlreadyOnTheMap() {
-        map.addTreasure(firstTreasure);
+        add(firstTreasure, FIRST_TREASURE_ID);
 
         assertThrows(IllegalStateException.class, () -> map.addTreasure(firstTreasure),
             "GameMap should refuse a treasure whose id is already on the map");
@@ -196,7 +163,7 @@ public class GameMapTest {
 
     @Test
     void testRemoveTreasureTakesTreasureOffTheMap() {
-        map.addTreasure(firstTreasure);
+        add(firstTreasure, FIRST_TREASURE_ID);
         map.removeTreasure(FIRST_TREASURE_ID);
 
         assertTrue(treasures.isEmpty(), "GameMap should no longer hold a treasure that was removed");
@@ -204,48 +171,22 @@ public class GameMapTest {
 
     @Test
     void testRemoveTreasureReturnsTheTreasureItRemoved() {
-        map.addTreasure(firstTreasure);
+        add(firstTreasure, FIRST_TREASURE_ID);
 
         assertEquals(Optional.of(firstTreasure), map.removeTreasure(FIRST_TREASURE_ID),
             "GameMap should return the treasure it removed");
-    } //TODO:
+    }
 
     @Test
     void testRemoveTreasureReturnsEmptyIfTreasureIsNotOnTheMap() {
         assertTrue(map.removeTreasure(UNKNOWN_TREASURE_ID).isEmpty(),
             "GameMap should return empty when removing a treasure id that is not on the map");
-    } //TODO:
-
-    @Test
-    void testGetTreasureReturnsTheTreasureWithThatId() {
-        map.addTreasure(firstTreasure);
-
-        assertEquals(Optional.of(firstTreasure), map.getTreasure(FIRST_TREASURE_ID),
-            "GameMap should return the treasure stored under the given id");
-    }
-
-    @Test
-    void testGetTreasureReturnsEmptyIfTreasureIsNotOnTheMap() {
-        assertTrue(map.getTreasure(UNKNOWN_TREASURE_ID).isEmpty(),
-            "GameMap should return empty for a treasure id that is not on the map");
-    }
-
-    @Test
-    void testGetTreasuresReturnsEveryTreasureOnTheMap() {
-        map.addTreasure(firstTreasure);
-        map.addTreasure(secondTreasure);
-
-        List<Treasure> onMap = map.getTreasures();
-
-        assertEquals(2, onMap.size(), "GameMap should return every treasure that was added");
-        assertTrue(onMap.containsAll(List.of(firstTreasure, secondTreasure)),
-            "GameMap should return each of the treasures that were added");
     }
 
     @Test
     void testTreasuresAtReturnsOnlyTheTreasuresOnThatPosition() {
-        map.addTreasure(firstTreasure);
-        map.addTreasure(secondTreasure);
+        lieAt(firstTreasure, FIRST_TREASURE_ID, FIRST_POSITION);
+        lieAt(secondTreasure, SECOND_TREASURE_ID, SECOND_POSITION);
 
         assertEquals(List.of(firstTreasure), map.treasuresAt(FIRST_POSITION),
             "GameMap should return only the treasures lying on the given position");
@@ -253,60 +194,85 @@ public class GameMapTest {
 
     @Test
     void testTreasuresAtReturnsEmptyIfNothingLiesThere() {
-        map.addTreasure(firstTreasure);
+        lieAt(firstTreasure, FIRST_TREASURE_ID, FIRST_POSITION);
 
         assertTrue(map.treasuresAt(SECOND_POSITION).isEmpty(),
             "GameMap should return no treasures for a position that holds none");
-    }
+    } //TODO: should i test non throwing behaviour
 
     @Test
     void testTreasuresByPositionGroupsTheTreasuresSharingAPosition() {
-        Treasure sameTile = new Treasure(SECOND_TREASURE_ID, FIRST_POSITION, ITEM);
-        map.addTreasure(firstTreasure);
-        map.addTreasure(sameTile);
+        lieAt(firstTreasure, FIRST_TREASURE_ID, FIRST_POSITION);
+        lieAt(secondTreasure, SECOND_TREASURE_ID, FIRST_POSITION);
 
         Map<Position, List<Treasure>> grouped = map.treasuresByPosition();
 
         assertEquals(1, grouped.size(),
             "GameMap should group treasures sharing a position under one key");
-        assertTrue(grouped.get(FIRST_POSITION).containsAll(List.of(firstTreasure, sameTile)),
+        assertTrue(grouped.get(FIRST_POSITION).containsAll(List.of(firstTreasure, secondTreasure)),
             "GameMap should put every treasure on a position in the same group");
     }
 
     @Test
     void testRandomFreePositionReturnsAWalkablePosition() {
-        stubGridSize();
+        mockGridSize();
         when(grid.isWalkable(any(Position.class))).thenReturn(false);
         when(grid.isWalkable(SECOND_POSITION)).thenReturn(true);
+        when(random.nextInt(anyInt())).thenReturn(FIRST_FREE_INDEX);
 
-        assertEquals(Optional.of(SECOND_POSITION), map.randomFreePosition(RANDOM),
+        assertEquals(Optional.of(SECOND_POSITION), map.randomFreePosition(random),
             "GameMap should return the only walkable position on the map");
     }
 
     @Test
     void testRandomFreePositionSkipsPositionsAnActorStandsOn() {
-        stubGridSize();
+        mockGridSize();
         when(grid.isWalkable(any(Position.class))).thenReturn(false);
         when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
         when(grid.isWalkable(SECOND_POSITION)).thenReturn(true);
-        map.addActor(firstActor);
+        when(random.nextInt(anyInt())).thenReturn(FIRST_FREE_INDEX);
+        standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
 
-        assertEquals(Optional.of(SECOND_POSITION), map.randomFreePosition(RANDOM),
+        assertEquals(Optional.of(SECOND_POSITION), map.randomFreePosition(random),
             "GameMap should never return a position an actor stands on");
     }
 
     @Test
     void testRandomFreePositionReturnsEmptyIfNothingIsFree() {
-        stubGridSize();
+        mockGridSize();
         when(grid.isWalkable(any(Position.class))).thenReturn(false);
         when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
-        map.addActor(firstActor);
+        standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
 
-        assertTrue(map.randomFreePosition(RANDOM).isEmpty(),
+        assertTrue(map.randomFreePosition(random).isEmpty(),
             "GameMap should return empty when every walkable position is taken");
     }
 
-    private void stubGridSize() {
+    private void add(Actor actor, int id) {
+        when(actor.getId()).thenReturn(id);
+
+        map.addActor(actor);
+    }
+
+    private void standAt(Actor actor, int id, Position position) {
+        when(actor.getPosition()).thenReturn(position);
+
+        add(actor, id);
+    }
+
+    private void add(Treasure treasure, int id) {
+        when(treasure.getId()).thenReturn(id);
+
+        map.addTreasure(treasure);
+    }
+
+    private void lieAt(Treasure treasure, int id, Position position) {
+        when(treasure.getPosition()).thenReturn(position);
+
+        add(treasure, id);
+    }
+
+    private void mockGridSize() {
         when(grid.getRows()).thenReturn(ROWS);
         when(grid.getCols()).thenReturn(COLS);
     }

@@ -19,6 +19,12 @@ public class Stats {
         this(BASE_HEALTH, BASE_ATTACK, BASE_DEFENSE);
     }
 
+    public Stats(Level level) {
+        this(BASE_HEALTH + bonus(level, HEALTH_PER_LEVEL),
+            BASE_ATTACK + bonus(level, ATTACK_PER_LEVEL),
+            BASE_DEFENSE + bonus(level, DEFENSE_PER_LEVEL));
+    }
+
     public Stats(int maxHealth, int attack, int defense) {
         requirePositive(maxHealth, "Max health");
         requireNotNegative(attack, "Attack");
@@ -72,6 +78,10 @@ public class Stats {
 
     public void restore() {
         health = maxHealth;
+    }
+
+    private static int bonus(Level level, int perLevel) {
+        return (level.getValue() - 1) * perLevel;
     }
 
     protected static void requirePositive(int value, String name) {

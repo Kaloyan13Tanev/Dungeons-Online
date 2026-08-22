@@ -2,6 +2,11 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Player;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.GameMap;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper.ActorMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper.ItemMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper.PlayerStateMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper.TerrainMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper.TreasureMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ActorDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TerrainDTO;

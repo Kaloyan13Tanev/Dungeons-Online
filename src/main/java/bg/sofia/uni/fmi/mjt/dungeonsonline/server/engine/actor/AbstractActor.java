@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Stats;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 
 public abstract class AbstractActor implements Actor {

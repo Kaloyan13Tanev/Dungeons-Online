@@ -2,8 +2,8 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.client;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.GameRenderer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.InvalidResponseException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ResponseMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.InvalidResponseException;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ResponseMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TerrainDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.TerrainKind;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ErrorResponse;

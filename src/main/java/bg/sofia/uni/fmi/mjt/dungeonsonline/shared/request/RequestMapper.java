@@ -1,7 +1,6 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestType;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.Mapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

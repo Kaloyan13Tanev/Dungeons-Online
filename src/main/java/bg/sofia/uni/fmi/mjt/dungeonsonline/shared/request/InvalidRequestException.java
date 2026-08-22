@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request;
 
 public class InvalidRequestException extends RuntimeException {
 

@@ -1,11 +1,11 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Level;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Level;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Minion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Player;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.PlayerStats;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Stats;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.PlayerStats;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Stats;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.Backpack;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.EmptySlotException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;

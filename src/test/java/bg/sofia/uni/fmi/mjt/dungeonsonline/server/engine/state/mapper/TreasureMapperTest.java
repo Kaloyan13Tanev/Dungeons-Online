@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;

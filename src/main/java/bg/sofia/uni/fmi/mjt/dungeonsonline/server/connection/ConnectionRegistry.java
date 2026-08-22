@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ResponseMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ResponseMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.Response;
 
 import java.util.Collection;

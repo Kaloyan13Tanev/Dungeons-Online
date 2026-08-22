@@ -1,5 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Level;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Stats;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 
 public class Minion extends AbstractActor {

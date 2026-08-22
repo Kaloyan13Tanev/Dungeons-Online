@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.potion;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.PlayerStats;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.PlayerStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

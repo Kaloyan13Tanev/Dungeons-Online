@@ -53,7 +53,7 @@ public class MapRenderer implements Renderer {
 
     private void renderBorders(TerrainDTO terrain) {
         int rows = terrain.tiles().size();
-        int cols = terrain.tiles().get(0).size();
+        int cols = terrain.tiles().getFirst().size();
         String horizontal = ("+" + "-".repeat(TILE_WIDTH)).repeat(cols) + "+";
 
         for (int row = 0; row <= rows; row++) {

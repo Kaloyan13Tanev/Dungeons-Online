@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.client;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.RequestMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;

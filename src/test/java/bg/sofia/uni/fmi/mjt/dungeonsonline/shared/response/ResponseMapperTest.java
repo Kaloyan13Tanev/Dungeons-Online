@@ -1,7 +1,5 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.EventResponse;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

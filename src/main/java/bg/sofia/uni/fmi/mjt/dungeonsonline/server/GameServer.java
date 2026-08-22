@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.PlayerConnection;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngine;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.RequestHandler;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdPool;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ResponseMapper;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ResponseMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.HandshakeResponse;
 
 import java.io.BufferedWriter;

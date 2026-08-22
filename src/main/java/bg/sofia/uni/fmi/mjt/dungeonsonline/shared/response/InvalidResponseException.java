@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response;
 
 public class InvalidResponseException extends RuntimeException {
 

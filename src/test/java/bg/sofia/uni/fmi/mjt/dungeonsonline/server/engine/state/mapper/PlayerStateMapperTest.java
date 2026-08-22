@@ -1,8 +1,8 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.mapper;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Level;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Level;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Player;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.PlayerStats;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.PlayerStats;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.Backpack;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ItemDTO;

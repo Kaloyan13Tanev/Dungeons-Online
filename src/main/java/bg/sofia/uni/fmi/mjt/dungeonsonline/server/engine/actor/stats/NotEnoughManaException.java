@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
 

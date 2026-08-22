@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

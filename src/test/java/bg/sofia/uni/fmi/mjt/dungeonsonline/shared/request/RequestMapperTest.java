@@ -1,8 +1,5 @@
-package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto;
+package bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request;
 
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

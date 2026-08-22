@@ -1,5 +1,7 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
 
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Level;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.PlayerStats;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.Backpack;
 

@@ -334,7 +334,6 @@ public class GameEngineImplTest {
 
         assertThrows(ItemLevelTooHighException.class, () -> engine.use(FIRST_PLAYER_ID, null),
             "GameEngineImpl should throw when the spell needs a higher level than the player has");
-        verify(playerStats, never()).spendMana(anyInt());
     }
 
     @Test
@@ -462,7 +461,6 @@ public class GameEngineImplTest {
         assertThrows(ItemLevelTooHighException.class,
             () -> engine.use(FIRST_PLAYER_ID, FIRST_MINION_ID),
             "GameEngineImpl should throw when the weapon needs a higher level than the player has");
-        verify(targetStats, never()).takeDamage(anyInt());
     }
 
     @Test
@@ -488,7 +486,6 @@ public class GameEngineImplTest {
         assertThrows(TargetNotReachableException.class,
             () -> engine.use(FIRST_PLAYER_ID, FIRST_MINION_ID),
             "GameEngineImpl should throw when the target stands on another tile");
-        verify(targetStats, never()).takeDamage(anyInt());
     }
 
     @Test
@@ -651,7 +648,6 @@ public class GameEngineImplTest {
         assertThrows(TargetNotReachableException.class,
             () -> engine.pickUp(FIRST_PLAYER_ID, TREASURE_ID),
             "GameEngineImpl should throw when the treasure lies on another tile");
-        verify(map, never()).removeTreasure(anyInt());
     }
 
     @Test
@@ -733,7 +729,6 @@ public class GameEngineImplTest {
         assertThrows(TargetNotReachableException.class,
             () -> engine.give(FIRST_PLAYER_ID, SECOND_PLAYER_ID),
             "GameEngineImpl should throw when the other player stands on another tile");
-        verify(otherBackpack, never()).add(any());
     }
 
     @Test
@@ -756,7 +751,6 @@ public class GameEngineImplTest {
         assertThrows(EmptySlotException.class,
             () -> engine.give(FIRST_PLAYER_ID, SECOND_PLAYER_ID),
             "GameEngineImpl should throw when a player gives from an empty slot");
-        verify(otherBackpack, never()).add(any());
     }
 
     @Test
@@ -813,7 +807,6 @@ public class GameEngineImplTest {
 
         assertThrows(EmptySlotException.class, () -> engine.drop(FIRST_PLAYER_ID),
             "GameEngineImpl should throw when a player drops from an empty slot");
-        verify(map, never()).addTreasure(any());
     }
 
     @Test

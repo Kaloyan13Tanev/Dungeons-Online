@@ -21,12 +21,17 @@ public class ServerListener implements Runnable {
 
     private final BufferedReader reader;
     private final GameRenderer renderer;
-    private final ResponseMapper mapper = new ResponseMapper();
+    private final ResponseMapper mapper;
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public ServerListener(BufferedReader reader, GameRenderer renderer) {
+        this(reader, renderer, new ResponseMapper());
+    }
+
+    ServerListener(BufferedReader reader, GameRenderer renderer, ResponseMapper mapper) {
         this.reader = reader;
         this.renderer = renderer;
+        this.mapper = mapper;
     }
 
     @Override

@@ -6,12 +6,12 @@ public class InvalidResponseException extends RuntimeException {
         super(message);
     }
 
-    public InvalidResponseException(String message, Throwable cause) {
-        super(message, cause);
+    public InvalidResponseException(String message, Throwable e) {
+        super(message, e);
     }
 
-    public InvalidResponseException(Throwable cause) {
-        super(cause);
+    public InvalidResponseException(Throwable e) {
+        super(e);
     }
 
 }

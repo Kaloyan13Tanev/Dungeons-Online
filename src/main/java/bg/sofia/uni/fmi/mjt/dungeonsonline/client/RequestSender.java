@@ -13,10 +13,15 @@ public class RequestSender {
     private static final Logger LOGGER = Logger.getLogger(RequestSender.class.getName());
 
     private final BufferedWriter writer;
-    private final RequestMapper mapper = new RequestMapper();
+    private final RequestMapper mapper;
 
     public RequestSender(BufferedWriter writer) {
+        this(writer, new RequestMapper());
+    }
+
+    RequestSender(BufferedWriter writer, RequestMapper mapper) {
         this.writer = writer;
+        this.mapper = mapper;
     }
 
     public synchronized void send(Request request) {

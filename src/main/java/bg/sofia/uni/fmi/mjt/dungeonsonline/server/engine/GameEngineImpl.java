@@ -56,13 +56,13 @@ public class GameEngineImpl implements GameEngine {
         this(map, treasureIds, minionIds, random, new HashMap<>(), new GameStateProducer());
     }
 
-    public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
-                          IdGenerator<Integer> minionIds, Random random, Map<Integer, Player> players) {
+    GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
+                   IdGenerator<Integer> minionIds, Random random, Map<Integer, Player> players) {
         this(map, treasureIds, minionIds, random, players, new GameStateProducer());
     }
 
-    public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds, IdGenerator<Integer> minionIds,
-                          Random random, Map<Integer, Player> players, GameStateProducer stateProducer) {
+    GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds, IdGenerator<Integer> minionIds,
+                   Random random, Map<Integer, Player> players, GameStateProducer stateProducer) {
         this.map = requireNotNull(map, "Map");
         this.treasureIds = requireNotNull(treasureIds, "Treasure id generator");
         this.minionIds = requireNotNull(minionIds, "Minion id generator");

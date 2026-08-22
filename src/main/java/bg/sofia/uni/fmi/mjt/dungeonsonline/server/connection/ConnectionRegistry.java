@@ -20,11 +20,11 @@ public class ConnectionRegistry {
         this(new ConcurrentHashMap<>(), new ResponseMapper());
     }
 
-    public ConnectionRegistry(Map<Integer, PlayerConnection> connections) {
+    ConnectionRegistry(Map<Integer, PlayerConnection> connections) {
         this(connections, new ResponseMapper());
     }
 
-    public ConnectionRegistry(Map<Integer, PlayerConnection> connections, ResponseMapper mapper) {
+    ConnectionRegistry(Map<Integer, PlayerConnection> connections, ResponseMapper mapper) {
         this.connections = connections;
         this.mapper = mapper;
     }

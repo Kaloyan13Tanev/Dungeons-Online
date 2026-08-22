@@ -26,7 +26,7 @@ public class ItemFormatter {
         this(defaultSymbols(), EMPTY_SLOT, MINION_NAME);
     }
 
-    public ItemFormatter(Map<ItemKind, Character> symbols, String emptySlot, String minionName) {
+    ItemFormatter(Map<ItemKind, Character> symbols, String emptySlot, String minionName) {
         for (ItemKind kind : ItemKind.values()) {
             if (!symbols.containsKey(kind)) {
                 throw new IllegalArgumentException("No symbol for " + kind);

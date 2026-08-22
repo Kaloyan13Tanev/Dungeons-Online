@@ -16,7 +16,7 @@ public class Player extends AbstractActor {
         this(id, position, new PlayerStats(), new Level(), new Backpack());
     }
 
-    public Player(int id, Position position, PlayerStats stats, Level level, Backpack backpack) {
+    Player(int id, Position position, PlayerStats stats, Level level, Backpack backpack) {
         if (id < 1) {
             throw new IllegalArgumentException("Id must be positive, got " + id);
         }

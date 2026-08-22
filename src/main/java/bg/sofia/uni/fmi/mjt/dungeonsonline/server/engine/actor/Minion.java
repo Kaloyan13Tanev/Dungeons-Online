@@ -15,7 +15,7 @@ public class Minion extends AbstractActor {
         this(id, position, new Stats(levelInst), levelInst);
     }
 
-    public Minion(int id, Position position, Stats stats, Level level) {
+    Minion(int id, Position position, Stats stats, Level level) {
         super(id, stats, position);
 
         this.level = level;

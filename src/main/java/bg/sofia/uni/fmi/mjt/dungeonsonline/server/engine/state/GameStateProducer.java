@@ -23,13 +23,13 @@ public class GameStateProducer {
         this(new ItemMapper());
     }
 
-    public GameStateProducer(ItemMapper items) {
+    GameStateProducer(ItemMapper items) {
         this(new TerrainMapper(), new ActorMapper(), new TreasureMapper(items),
             new PlayerStateMapper(items));
     }
 
-    public GameStateProducer(TerrainMapper terrain, ActorMapper actors, TreasureMapper treasures,
-                             PlayerStateMapper playerStates) {
+    GameStateProducer(TerrainMapper terrain, ActorMapper actors, TreasureMapper treasures,
+                      PlayerStateMapper playerStates) {
         this.terrain = terrain;
         this.actors = actors;
         this.treasures = treasures;

@@ -27,7 +27,7 @@ public class PlayerConnection implements AutoCloseable {
             new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
     }
 
-    public PlayerConnection(int playerId, Socket socket, BufferedReader reader, BufferedWriter writer) {
+    PlayerConnection(int playerId, Socket socket, BufferedReader reader, BufferedWriter writer) {
         this.playerId = playerId;
         this.socket = socket;
         this.reader = reader;

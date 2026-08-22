@@ -40,7 +40,7 @@ public class RequestHandler {
         this(registry, engine, new RequestMapper());
     }
 
-    public RequestHandler(ConnectionRegistry registry, GameEngine engine, RequestMapper mapper) {
+    RequestHandler(ConnectionRegistry registry, GameEngine engine, RequestMapper mapper) {
         this.registry = registry;
         this.engine = engine;
         this.mapper = mapper;

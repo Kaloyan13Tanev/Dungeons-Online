@@ -18,7 +18,7 @@ public class JLineConsole implements Console {
         this(TerminalBuilder.builder().system(true).build());
     }
 
-    public JLineConsole(Terminal terminal) {
+    JLineConsole(Terminal terminal) {
         this.terminal = terminal;
     }
 

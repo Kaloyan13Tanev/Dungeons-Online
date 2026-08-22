@@ -44,7 +44,7 @@ public class PlayerClient {
         configureLogging();
 
         try (Socket socket = new Socket(SERVER_HOST, SERVER_PORT)) {
-            LOGGER.log(Level.CONFIG, "Connected to {0}:{1}.", new Object[] {SERVER_HOST, SERVER_PORT});
+            LOGGER.log(Level.CONFIG, "Connected to {0}:{1}.", new Object[]{SERVER_HOST, SERVER_PORT});
             play(socket);
         } catch (UnknownHostException e) {
             LOGGER.log(Level.SEVERE, "Could not resolve host " + SERVER_HOST + ".", e);
@@ -61,7 +61,7 @@ public class PlayerClient {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
              BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
+                     new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
 
             ClientState state = new ClientState();
             GameRenderer renderer = buildRenderer(console, state);
@@ -84,11 +84,11 @@ public class PlayerClient {
         ItemFormatter items = new ItemFormatter();
 
         return new GameRendererImpl(console, state,
-            new MapRenderer(console, items),
-            new StatsRenderer(console, PANEL_COLUMN),
-            new BackpackRenderer(console, items, PANEL_COLUMN),
-            new MessageRenderer(console, PANEL_COLUMN),
-            new SelectionRenderer(console, items, PANEL_COLUMN));
+                new MapRenderer(console, items),
+                new StatsRenderer(console, PANEL_COLUMN),
+                new BackpackRenderer(console, items, PANEL_COLUMN),
+                new MessageRenderer(console, PANEL_COLUMN),
+                new SelectionRenderer(console, items, PANEL_COLUMN));
     }
 
     private void configureLogging() {

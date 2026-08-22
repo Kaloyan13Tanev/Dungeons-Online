@@ -21,36 +21,12 @@ public class GameMap {
     private final Map<Integer, Actor> actors;
     private final Map<Integer, Treasure> treasures;
 
-    public GameMap(TerrainGrid terrain) {
-        this(terrain, new HashMap<>(), new HashMap<>());
-    }
-
     public GameMap(TerrainGrid terrain, Map<Integer, Actor> actors, Map<Integer, Treasure> treasures) {
         this.terrain = terrain;
         this.actors = actors;
         this.treasures = treasures;
 
         requirePlaceable();
-    }
-
-    private void requirePlaceable() {
-        Set<Position> taken = new HashSet<>();
-
-        for (Actor actor : actors.values()) {
-            if (!isWalkable(actor.getPosition())) {
-                throw new IllegalArgumentException("Cannot place an actor at " + actor.getPosition());
-            }
-
-            if (actor instanceof Minion && !taken.add(actor.getPosition())) {
-                throw new IllegalArgumentException("There is already a minion at " + actor.getPosition());
-            }
-        }
-
-        for (Treasure treasure : treasures.values()) {
-            if (!isWalkable(treasure.getPosition())) {
-                throw new IllegalArgumentException("Cannot place a treasure at " + treasure.getPosition());
-            }
-        }
     }
 
     public TerrainGrid getTerrainGrid() {
@@ -142,6 +118,26 @@ public class GameMap {
         }
 
         return Optional.of(free.get(random.nextInt(free.size())));
+    }
+
+    private void requirePlaceable() {
+        Set<Position> taken = new HashSet<>();
+
+        for (Actor actor : actors.values()) {
+            if (!isWalkable(actor.getPosition())) {
+                throw new IllegalArgumentException("Cannot place an actor at " + actor.getPosition());
+            }
+
+            if (actor instanceof Minion && !taken.add(actor.getPosition())) {
+                throw new IllegalArgumentException("There is already a minion at " + actor.getPosition());
+            }
+        }
+
+        for (Treasure treasure : treasures.values()) {
+            if (!isWalkable(treasure.getPosition())) {
+                throw new IllegalArgumentException("Cannot place a treasure at " + treasure.getPosition());
+            }
+        }
     }
 
 }

@@ -26,7 +26,7 @@ public class Backpack {
         this.slots = new Item[capacity];
     }
 
-    public Backpack(Item[] slots) {
+    Backpack(Item[] slots) {
         if (slots == null || slots.length < 1) {
             throw new IllegalArgumentException("Slots must not be empty");
         }

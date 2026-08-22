@@ -34,11 +34,16 @@ public class RequestHandler {
 
     private final ConnectionRegistry registry;
     private final GameEngine engine;
-    private final RequestMapper mapper = new RequestMapper();
+    private final RequestMapper mapper;
 
     public RequestHandler(ConnectionRegistry registry, GameEngine engine) {
+        this(registry, engine, new RequestMapper());
+    }
+
+    public RequestHandler(ConnectionRegistry registry, GameEngine engine, RequestMapper mapper) {
         this.registry = registry;
         this.engine = engine;
+        this.mapper = mapper;
     }
 
     public void handle(int playerId, String message) {

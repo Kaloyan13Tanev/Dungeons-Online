@@ -49,42 +49,26 @@ public class GameEngineImpl implements GameEngine {
     private final IdGenerator<Integer> minionIds;
     private final Random random;
     private final Map<Integer, Player> players;
-    private final GameStateProducer stateProducer = new GameStateProducer();
+    private final GameStateProducer stateProducer;
 
     public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
                           IdGenerator<Integer> minionIds, Random random) {
-        this(map, treasureIds, minionIds, random, new HashMap<>());
+        this(map, treasureIds, minionIds, random, new HashMap<>(), new GameStateProducer());
     }
 
     public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds,
                           IdGenerator<Integer> minionIds, Random random, Map<Integer, Player> players) {
+        this(map, treasureIds, minionIds, random, players, new GameStateProducer());
+    }
+
+    public GameEngineImpl(GameMap map, IdGenerator<Integer> treasureIds, IdGenerator<Integer> minionIds,
+                          Random random, Map<Integer, Player> players, GameStateProducer stateProducer) {
         this.map = requireNotNull(map, "Map");
         this.treasureIds = requireNotNull(treasureIds, "Treasure id generator");
         this.minionIds = requireNotNull(minionIds, "Minion id generator");
         this.random = requireNotNull(random, "Random");
         this.players = players;
-    }
-
-    @Override
-    public synchronized void populate(List<MinionSpawn> minions, List<TreasureSpawn> treasures) {
-        for (MinionSpawn spawn : minions) {
-            requireWalkable(spawn.position());
-            map.addActor(new Minion(minionIds.acquire(), spawn.level(), spawn.position()));
-        }
-
-        for (TreasureSpawn spawn : treasures) {
-            requireWalkable(spawn.position());
-            map.addTreasure(new Treasure(treasureIds.acquire(), spawn.position(), spawn.item()));
-        }
-
-        LOGGER.log(Level.INFO, "Populated the map with {0} minions and {1} treasures.",
-            new Object[] {minions.size(), treasures.size()});
-    }
-
-    private void requireWalkable(Position position) {
-        if (!map.getTerrainGrid().isInside(position) || !map.getTerrainGrid().isWalkable(position)) {
-            throw new IllegalArgumentException("Cannot place anything at " + position);
-        }
+        this.stateProducer = stateProducer;
     }
 
     @Override

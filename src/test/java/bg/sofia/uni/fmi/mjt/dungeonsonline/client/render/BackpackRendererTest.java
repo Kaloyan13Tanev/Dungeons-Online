@@ -92,7 +92,7 @@ public class BackpackRendererTest {
         verify(console).moveCursor(START_ROW + 1, START_COLUMN);
         verify(console).moveCursor(START_ROW + 2, START_COLUMN);
     }
-    
+
     @Test
     void testRenderClearsItsAreaBeforeItPrints() {
         mockBackpack(FIRST_SLOT);

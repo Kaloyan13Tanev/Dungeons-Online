@@ -2,14 +2,17 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Minion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GameMap {
@@ -19,15 +22,35 @@ public class GameMap {
     private final Map<Integer, Treasure> treasures;
 
     public GameMap(TerrainGrid terrain) {
-        this.terrain = terrain;
-        this.actors = new HashMap<>();
-        this.treasures = new HashMap<>();
+        this(terrain, new HashMap<>(), new HashMap<>());
     }
 
     public GameMap(TerrainGrid terrain, Map<Integer, Actor> actors, Map<Integer, Treasure> treasures) {
         this.terrain = terrain;
         this.actors = actors;
         this.treasures = treasures;
+
+        requirePlaceable();
+    }
+
+    private void requirePlaceable() {
+        Set<Position> taken = new HashSet<>();
+
+        for (Actor actor : actors.values()) {
+            if (!isWalkable(actor.getPosition())) {
+                throw new IllegalArgumentException("Cannot place an actor at " + actor.getPosition());
+            }
+
+            if (actor instanceof Minion && !taken.add(actor.getPosition())) {
+                throw new IllegalArgumentException("There is already a minion at " + actor.getPosition());
+            }
+        }
+
+        for (Treasure treasure : treasures.values()) {
+            if (!isWalkable(treasure.getPosition())) {
+                throw new IllegalArgumentException("Cannot place a treasure at " + treasure.getPosition());
+            }
+        }
     }
 
     public TerrainGrid getTerrainGrid() {
@@ -94,13 +117,21 @@ public class GameMap {
             .collect(Collectors.groupingBy(Treasure::getPosition));
     }
 
+    public boolean isWalkable(Position position) {
+        return terrain.isInside(position) && terrain.isWalkable(position);
+    }
+
+    public boolean isFree(Position position) {
+        return isWalkable(position) && actorsAt(position).isEmpty();
+    }
+
     public Optional<Position> randomFreePosition(Random random) {
         List<Position> free = new ArrayList<>();
 
         for (int row = 0; row < terrain.getRows(); row++) {
             for (int col = 0; col < terrain.getCols(); col++) {
                 Position position = new Position(row, col);
-                if (terrain.isWalkable(position) && actorsAt(position).isEmpty()) {
+                if (isFree(position)) {
                     free.add(position);
                 }
             }

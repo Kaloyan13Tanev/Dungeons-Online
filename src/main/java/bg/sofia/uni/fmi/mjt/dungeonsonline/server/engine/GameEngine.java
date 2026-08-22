@@ -9,8 +9,6 @@ import java.util.Map;
 
 public interface GameEngine {
 
-    void populate(List<MinionSpawn> minions, List<TreasureSpawn> treasures);
-
     TerrainDTO terrain();
 
     Map<Integer, GameStateDTO> stateForAll();

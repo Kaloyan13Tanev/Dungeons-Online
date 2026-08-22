@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Minion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +32,8 @@ public class GameMapTest {
 
     private static final Position FIRST_POSITION = new Position(0, 0);
     private static final Position SECOND_POSITION = new Position(1, 1);
+    private static final Position OBSTACLE_POSITION = new Position(0, 1);
+    private static final Position OUTSIDE_POSITION = new Position(-1, 0);
 
     private static final int FIRST_ACTOR_ID = 1;
     private static final int SECOND_ACTOR_ID = 2;
@@ -48,6 +52,10 @@ public class GameMapTest {
     @Mock
     Actor secondActor;
     @Mock
+    Minion firstMinion;
+    @Mock
+    Minion secondMinion;
+    @Mock
     Treasure firstTreasure;
     @Mock
     Treasure secondTreasure;
@@ -63,6 +71,94 @@ public class GameMapTest {
         actors = new HashMap<>();
         treasures = new HashMap<>();
         map = new GameMap(grid, actors, treasures);
+    }
+
+    @Test
+    void testConstructorThrowsWhenAnActorStandsOutsideTheMap() {
+        when(firstActor.getPosition()).thenReturn(OUTSIDE_POSITION);
+        when(grid.isInside(OUTSIDE_POSITION)).thenReturn(false);
+
+        Map<Integer, Actor> world = Map.of(FIRST_ACTOR_ID, firstActor);
+
+        assertThrows(IllegalArgumentException.class, () -> new GameMap(grid, world, Map.of()),
+            "GameMap should throw when an actor stands outside the map");
+    }
+
+    @Test
+    void testConstructorThrowsWhenAnActorStandsOnAnObstacle() {
+        when(firstActor.getPosition()).thenReturn(OBSTACLE_POSITION);
+        when(grid.isInside(OBSTACLE_POSITION)).thenReturn(true);
+        when(grid.isWalkable(OBSTACLE_POSITION)).thenReturn(false);
+
+        Map<Integer, Actor> world = Map.of(FIRST_ACTOR_ID, firstActor);
+
+        assertThrows(IllegalArgumentException.class, () -> new GameMap(grid, world, Map.of()),
+            "GameMap should throw when an actor stands on a tile that cannot be walked on");
+    }
+
+    @Test
+    void testConstructorThrowsWhenTwoMinionsShareATile() {
+        when(firstMinion.getPosition()).thenReturn(FIRST_POSITION);
+        when(secondMinion.getPosition()).thenReturn(FIRST_POSITION);
+        when(grid.isInside(FIRST_POSITION)).thenReturn(true);
+        when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
+
+        Map<Integer, Actor> world = Map.of(FIRST_ACTOR_ID, firstMinion, SECOND_ACTOR_ID, secondMinion);
+
+        assertThrows(IllegalArgumentException.class, () -> new GameMap(grid, world, Map.of()),
+            "GameMap should throw when two minions stand on the same tile");
+    }
+
+    @Test
+    void testConstructorThrowsWhenATreasureLiesOnAnObstacle() {
+        when(firstTreasure.getPosition()).thenReturn(OBSTACLE_POSITION);
+        when(grid.isInside(OBSTACLE_POSITION)).thenReturn(true);
+        when(grid.isWalkable(OBSTACLE_POSITION)).thenReturn(false);
+
+        Map<Integer, Treasure> world = Map.of(FIRST_TREASURE_ID, firstTreasure);
+
+        assertThrows(IllegalArgumentException.class, () -> new GameMap(grid, Map.of(), world),
+            "GameMap should throw when a treasure lies on a tile that cannot be walked on");
+    }
+
+    @Test
+    void testIsWalkableIsFalseOutsideTheMap() {
+        when(grid.isInside(OUTSIDE_POSITION)).thenReturn(false);
+
+        assertFalse(map.isWalkable(OUTSIDE_POSITION),
+            "GameMap should not treat a position outside the map as walkable");
+    }
+
+    @Test
+    void testIsWalkableFollowsTheTerrainInsideTheMap() {
+        when(grid.isInside(FIRST_POSITION)).thenReturn(true);
+        when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
+        when(grid.isInside(OBSTACLE_POSITION)).thenReturn(true);
+        when(grid.isWalkable(OBSTACLE_POSITION)).thenReturn(false);
+
+        assertTrue(map.isWalkable(FIRST_POSITION),
+            "GameMap should treat a walkable tile inside the map as walkable");
+        assertFalse(map.isWalkable(OBSTACLE_POSITION),
+            "GameMap should not treat an obstacle as walkable");
+    }
+
+    @Test
+    void testIsFreeIsTrueForAWalkableTileNobodyStandsOn() {
+        when(grid.isInside(FIRST_POSITION)).thenReturn(true);
+        when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
+
+        assertTrue(map.isFree(FIRST_POSITION),
+            "GameMap should treat a walkable tile nobody stands on as free");
+    }
+
+    @Test
+    void testIsFreeIsFalseWhenAnActorStandsThere() {
+        when(grid.isInside(FIRST_POSITION)).thenReturn(true);
+        when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
+        standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
+
+        assertFalse(map.isFree(FIRST_POSITION),
+            "GameMap should not treat a tile an actor stands on as free");
     }
 
     @Test
@@ -215,7 +311,7 @@ public class GameMapTest {
 
     @Test
     void testRandomFreePositionReturnsAWalkablePosition() {
-        mockGridSize();
+        mockGrid();
         when(grid.isWalkable(any(Position.class))).thenReturn(false);
         when(grid.isWalkable(SECOND_POSITION)).thenReturn(true);
         when(random.nextInt(anyInt())).thenReturn(FIRST_FREE_INDEX);
@@ -226,7 +322,7 @@ public class GameMapTest {
 
     @Test
     void testRandomFreePositionSkipsPositionsAnActorStandsOn() {
-        mockGridSize();
+        mockGrid();
         when(grid.isWalkable(any(Position.class))).thenReturn(false);
         when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
         when(grid.isWalkable(SECOND_POSITION)).thenReturn(true);
@@ -239,7 +335,7 @@ public class GameMapTest {
 
     @Test
     void testRandomFreePositionReturnsEmptyIfNothingIsFree() {
-        mockGridSize();
+        mockGrid();
         when(grid.isWalkable(any(Position.class))).thenReturn(false);
         when(grid.isWalkable(FIRST_POSITION)).thenReturn(true);
         standAt(firstActor, FIRST_ACTOR_ID, FIRST_POSITION);
@@ -272,9 +368,10 @@ public class GameMapTest {
         add(treasure, id);
     }
 
-    private void mockGridSize() {
+    private void mockGrid() {
         when(grid.getRows()).thenReturn(ROWS);
         when(grid.getCols()).thenReturn(COLS);
+        when(grid.isInside(any(Position.class))).thenReturn(true);
     }
 
 }

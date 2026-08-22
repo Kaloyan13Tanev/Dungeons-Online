@@ -13,15 +13,20 @@ public class ConnectionRegistry {
 
     private static final Logger LOGGER = Logger.getLogger(ConnectionRegistry.class.getName());
 
-    private final ResponseMapper mapper = new ResponseMapper();
+    private final ResponseMapper mapper;
     private final Map<Integer, PlayerConnection> connections;
 
     public ConnectionRegistry() {
-        this.connections = new ConcurrentHashMap<>();
+        this(new ConcurrentHashMap<>(), new ResponseMapper());
     }
 
     public ConnectionRegistry(Map<Integer, PlayerConnection> connections) {
+        this(connections, new ResponseMapper());
+    }
+
+    public ConnectionRegistry(Map<Integer, PlayerConnection> connections, ResponseMapper mapper) {
         this.connections = connections;
+        this.mapper = mapper;
     }
 
     public void register(PlayerConnection connection) {

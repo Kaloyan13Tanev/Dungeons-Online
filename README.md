@@ -165,3 +165,15 @@ client/    socket listener, JLine console, input loop, renderers
 `GameEngineImpl` holds all mutable game state and every public method on it is
 `synchronized`, so the engine is the single lock in the server. Connections are handled on
 virtual threads.
+
+## AI assistance
+
+Claude Opus 5 was used during the development of this project and to write this README.
+It helped with:
+
+- `InOrder` verification in tests
+- `ArgumentCaptor`
+- passing `Consumer<String>` to `handler.handle()`
+- some of the client render tests
+- setting up the logger configuration files (`server-logging.properties`,
+  `client-logging.properties`)

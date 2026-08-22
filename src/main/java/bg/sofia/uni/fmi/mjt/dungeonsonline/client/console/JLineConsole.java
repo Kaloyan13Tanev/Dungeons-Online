@@ -15,7 +15,11 @@ public class JLineConsole implements Console {
     private final Terminal terminal;
 
     public JLineConsole() throws IOException {
-        this.terminal = TerminalBuilder.builder().system(true).build();
+        this(TerminalBuilder.builder().system(true).build());
+    }
+
+    public JLineConsole(Terminal terminal) {
+        this.terminal = terminal;
     }
 
     @Override

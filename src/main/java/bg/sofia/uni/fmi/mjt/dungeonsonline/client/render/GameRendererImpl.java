@@ -85,7 +85,7 @@ public class GameRendererImpl implements GameRenderer {
         }
 
         if (!ids.contains(state.getHighlightedId())) {
-            state.setHighlightedId(ids.get(0));
+            state.setHighlightedId(ids.getFirst());
         }
     }
 

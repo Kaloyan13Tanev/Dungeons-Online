@@ -72,7 +72,6 @@ public class InputLoopTest {
     private static final int NINTH_SLOT = 8;
     private static final int LAST_SLOT = 9;
 
-    private static final int MY_ID = 1;
     private static final int OTHER_PLAYER_ID = 2;
     private static final int MINION_ID = 10;
     private static final int TREASURE_ID = 5;

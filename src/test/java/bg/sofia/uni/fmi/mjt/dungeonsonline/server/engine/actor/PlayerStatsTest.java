@@ -72,7 +72,7 @@ public class PlayerStatsTest {
             "Player stats should throw when the cost is higher than the mana that is left");
         assertEquals(BASE_MANA, stats.getMana(),
             "Player stats should not spend any mana when the cost is too high");
-    } //TODO:
+    }
 
     @Test
     void testHasManaCoversCostsUpToTheManaThatIsLeft() {

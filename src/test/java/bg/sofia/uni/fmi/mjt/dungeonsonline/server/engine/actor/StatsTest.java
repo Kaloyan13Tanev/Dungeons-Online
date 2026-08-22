@@ -44,7 +44,7 @@ public class StatsTest {
     @Test
     void testIsAliveIsTrueWhileHealthRemains() {
         assertTrue(stats.isAlive(), "Stats should return true while health is above zero");
-    } //TODO:
+    }
 
     @Test
     void testLevelUpRaisesEveryStat() {

@@ -6,7 +6,6 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Minion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

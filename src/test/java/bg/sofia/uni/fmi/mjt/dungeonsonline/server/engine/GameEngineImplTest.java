@@ -21,8 +21,6 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.state.GameStateProducer
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.DroppedTreasure;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdGenerator;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TerrainDTO;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.TerrainKind;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +71,6 @@ public class GameEngineImplTest {
     private static final int FIRST_SLOT = 0;
     private static final int SECOND_SLOT = 1;
 
-    private static final TerrainDTO TERRAIN = new TerrainDTO(List.of(List.of(TerrainKind.GROUND)));
 
     private static final int FIRST_LEVEL = 1;
 
@@ -146,7 +143,6 @@ public class GameEngineImplTest {
         engine = new GameEngineImpl(map, treasureIds, minionIds, random, players, stateProducer);
     }
 
-    //TODO: should i tests whether the things are called correctly
 
     @Test
     void testJoinAddsThePlayerAtTheSpawnPoint() {

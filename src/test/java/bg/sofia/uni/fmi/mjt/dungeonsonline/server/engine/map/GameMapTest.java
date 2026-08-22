@@ -294,7 +294,7 @@ public class GameMapTest {
 
         assertTrue(map.treasuresAt(SECOND_POSITION).isEmpty(),
             "GameMap should return no treasures for a position that holds none");
-    } //TODO: should i test non throwing behaviour
+    }
 
     @Test
     void testTreasuresByPositionGroupsTheTreasuresSharingAPosition() {

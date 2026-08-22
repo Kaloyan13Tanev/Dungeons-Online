@@ -14,8 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

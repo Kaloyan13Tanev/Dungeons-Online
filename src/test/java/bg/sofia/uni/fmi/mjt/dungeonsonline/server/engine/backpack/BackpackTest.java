@@ -110,7 +110,7 @@ public class BackpackTest {
 
         assertEquals(Optional.of(WEAPON), backpack.at(SECOND_SLOT),
             "Backpack should not shift the items that follow an emptied slot");
-    } //TODO:
+    }
 
     @Test
     void testSlotsReturnsEverySlotIncludingTheEmptyOnes() {

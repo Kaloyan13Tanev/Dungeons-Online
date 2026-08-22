@@ -135,6 +135,6 @@ public class IdPoolTest {
 //        assertEquals(PLAYER_COUNT, acquired.size(),
 //            "Id Pool should hand out every id when as many callers as ids compete");
 //        assertTrue(pool.acquire().isEmpty(), "Id Pool should return empty once every id is taken");
-//    } //TODO:
+//    }
 
 }

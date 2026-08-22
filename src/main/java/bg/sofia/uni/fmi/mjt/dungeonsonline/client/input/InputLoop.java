@@ -69,10 +69,6 @@ public class InputLoop {
         }
     }
 
-    public void stop() {
-        playing = false;
-    }
-
     private void handleEscape() throws IOException {
         int next = console.read(ESCAPE_TIMEOUT);
 
@@ -153,7 +149,7 @@ public class InputLoop {
         }
 
         state.setMode(mode);
-        state.setHighlightedId(ids.get(0));
+        state.setHighlightedId(ids.getFirst());
         renderer.renderSelection();
     }
 

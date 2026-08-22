@@ -11,7 +11,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RequestMapperTest {
 
-    private static final String REQUEST1_JSON = "{\"type\":\"MOVE\",\"body\":\"{\\\"direction\\\":\\\"UP\\\"}\"}";
+    private static final String REQUEST1_JSON =
+        "{\"type\":\"MOVE\",\"body\":\"{\\\"direction\\\":\\\"UP\\\"}\"}";
+
+    private static final String NULL_TYPE_JSON =
+        "{\"type\":null,\"body\":\"{\\\"direction\\\":\\\"UP\\\"}\"}";
+    private static final String UNKNOWN_TYPE_JSON =
+        "{\"type\":\"UNKNOWN\",\"body\":\"{\\\"direction\\\":\\\"UP\\\"}\"}";
+
+    private static final String MISMATCHED_BODY_JSON = "{\"type\":\"MOVE\",\"body\":\"[1,2,3]\"}";
+    private static final String EMPTY_BODY_JSON = "{\"type\":\"MOVE\",\"body\":\"\"}";
+
+    private static final String NOT_JSON = "not JSON";
+    private static final String TWO_REQUESTS_JSON =
+        "{\"type\":\"MOVE\",\"body\":\"{}\"}{\"type\":\"QUIT\",\"body\":\"{}\"}";
 
     private final RequestMapper mapper = new RequestMapper();
 
@@ -46,34 +59,25 @@ public class RequestMapperTest {
 
     @Test
     void testDeserializeThrowsInvalidRequestExceptionWhenTypeIsNullOrUnknown() {
-        String nullType = "{\"type\":null,\"body\":\"{\\\"direction\\\":\\\"UP\\\"}\"}";
-        String unknownType = "{\"type\":\"UNKNOWN\",\"body\":\"{\\\"direction\\\":\\\"UP\\\"}\"}";
-
-        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(nullType),
+        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(NULL_TYPE_JSON),
             "RequestMapper should throw when the request has no type");
-        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(unknownType),
+        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(UNKNOWN_TYPE_JSON),
             "RequestMapper should throw when the request type is unknown");
     }
 
     @Test
     void testDeserializeThrowsInvalidRequestExceptionWhenBodyDoesNotMatch() {
-        String mismatchedBody = "{\"type\":\"MOVE\",\"body\":\"[1,2,3]\"}";
-
-        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(mismatchedBody),
+        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(MISMATCHED_BODY_JSON),
             "RequestMapper should throw when the body does not fit the request type");
     }
 
     @Test
     void testDeserializeThrowsInvalidRequestExceptionWhenJsonInvalid() {
-        String notJson = "not JSON";
-        String emptyBody = "{\"type\":\"MOVE\",\"body\":\"\"}";
-        String extraParts = "{\"type\":\"MOVE\",\"body\":\"{}\"}{\"type\":\"QUIT\",\"body\":\"{}\"}";
-
-        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(notJson),
+        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(NOT_JSON),
             "RequestMapper should throw when the input is not JSON");
-        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(emptyBody),
+        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(EMPTY_BODY_JSON),
             "RequestMapper should throw when the body is not JSON");
-        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(extraParts),
+        assertThrows(InvalidRequestException.class, () -> mapper.deserialize(TWO_REQUESTS_JSON),
             "RequestMapper should throw when the input holds more than one request");
     }
 

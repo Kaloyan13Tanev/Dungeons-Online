@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ItemDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ActorKind;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ItemKind;
 
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ItemFormatter {
@@ -33,7 +33,7 @@ public class ItemFormatter {
             }
         }
 
-        this.symbols = new EnumMap<>(symbols);
+        this.symbols = new HashMap<>(symbols);
         this.emptySlot = emptySlot;
         this.minionName = minionName;
     }
@@ -63,7 +63,7 @@ public class ItemFormatter {
     }
 
     private static Map<ItemKind, Character> defaultSymbols() {
-        Map<ItemKind, Character> defaults = new EnumMap<>(ItemKind.class);
+        Map<ItemKind, Character> defaults = new HashMap<>();
 
         defaults.put(ItemKind.WEAPON, WEAPON_SYMBOL);
         defaults.put(ItemKind.SPELL, SPELL_SYMBOL);

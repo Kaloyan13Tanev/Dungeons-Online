@@ -8,9 +8,9 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ActorKind;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 
 public class ClientState {
 
@@ -19,7 +19,7 @@ public class ClientState {
     private int playerId;
     private TerrainDTO terrain;
     private GameStateDTO state;
-    private final Deque<Message> messages = new ArrayDeque<>();
+    private final Queue<Message> messages = new ArrayDeque<>();
 
     private Mode mode = Mode.EXPLORING;
     private Integer highlightedId;
@@ -58,14 +58,6 @@ public class ClientState {
 
     public void addError(String text) {
         add(new Message(text, true));
-    }
-
-    private void add(Message message) {
-        messages.addLast(message);
-
-        while (messages.size() > MESSAGE_HISTORY) {
-            messages.removeFirst();
-        }
     }
 
     public Mode getMode() {
@@ -136,6 +128,14 @@ public class ClientState {
         }
 
         return List.copyOf(onTile);
+    }
+
+    private void add(Message message) {
+        messages.offer(message);
+
+        while (messages.size() > MESSAGE_HISTORY) {
+            messages.poll();
+        }
     }
 
     private boolean sameTile(int row, int col, ActorDTO self) {

@@ -18,6 +18,16 @@ public class StatsTest {
     private static final int ATTACK_PER_LEVEL = 5;
     private static final int DEFENSE_PER_LEVEL = 5;
 
+    private static final int LEVELS = 3;
+
+    private static final int DAMAGE = 30;
+    private static final int DAMAGE_BEYOND_THE_HEALTH = 50;
+    private static final int DAMAGE_BEFORE_HEALING = 40;
+    private static final int HEALING = 15;
+    private static final int SMALL_DAMAGE = 10;
+    private static final int HEALING_ABOVE_THE_MAXIMUM = 100;
+    private static final int DAMAGE_BEFORE_RESTORING = 60;
+
     private Stats stats;
 
     @BeforeEach
@@ -60,13 +70,13 @@ public class StatsTest {
 
     @Test
     void testLevelUpAppliesEveryLevelItIsGiven() {
-        stats.levelUp(3);
+        stats.levelUp(LEVELS);
 
-        assertEquals(BASE_HEALTH + 3 * HEALTH_PER_LEVEL, stats.getMaxHealth(),
+        assertEquals(BASE_HEALTH + LEVELS * HEALTH_PER_LEVEL, stats.getMaxHealth(),
             "Stats should raise max health once per level gained");
-        assertEquals(BASE_ATTACK + 3 * ATTACK_PER_LEVEL, stats.getAttack(),
+        assertEquals(BASE_ATTACK + LEVELS * ATTACK_PER_LEVEL, stats.getAttack(),
             "Stats should raise attack once per level gained");
-        assertEquals(BASE_DEFENSE + 3 * DEFENSE_PER_LEVEL, stats.getDefense(),
+        assertEquals(BASE_DEFENSE + LEVELS * DEFENSE_PER_LEVEL, stats.getDefense(),
             "Stats should raise defense once per level gained");
     }
 
@@ -97,14 +107,14 @@ public class StatsTest {
 
     @Test
     void testTakeDamageReducesHealth() {
-        stats.takeDamage(30);
+        stats.takeDamage(DAMAGE);
 
-        assertEquals(BASE_HEALTH - 30, stats.getHealth(), "Stats should subtract the damage from health");
+        assertEquals(BASE_HEALTH - DAMAGE, stats.getHealth(), "Stats should subtract the damage from health");
     }
 
     @Test
     void testTakeDamageStopsAtZero() {
-        stats.takeDamage(BASE_HEALTH + 50);
+        stats.takeDamage(BASE_HEALTH + DAMAGE_BEYOND_THE_HEALTH);
 
         assertEquals(0, stats.getHealth(), "Stats should never drop health below zero");
         assertFalse(stats.isAlive(), "Stats should not be alive once health reaches zero");
@@ -118,16 +128,17 @@ public class StatsTest {
 
     @Test
     void testHealRestoresHealth() {
-        stats.takeDamage(40);
-        stats.heal(15);
+        stats.takeDamage(DAMAGE_BEFORE_HEALING);
+        stats.heal(HEALING);
 
-        assertEquals(BASE_HEALTH - 40 + 15, stats.getHealth(), "Stats should add the healing to health");
+        assertEquals(BASE_HEALTH - DAMAGE_BEFORE_HEALING + HEALING, stats.getHealth(),
+            "Stats should add the healing to health");
     }
 
     @Test
     void testHealStopsAtMaxHealth() {
-        stats.takeDamage(10);
-        stats.heal(100);
+        stats.takeDamage(SMALL_DAMAGE);
+        stats.heal(HEALING_ABOVE_THE_MAXIMUM);
 
         assertEquals(BASE_HEALTH, stats.getHealth(), "Stats should never heal above max health");
     }
@@ -140,7 +151,7 @@ public class StatsTest {
 
     @Test
     void testRestoreRefillsHealth() {
-        stats.takeDamage(60);
+        stats.takeDamage(DAMAGE_BEFORE_RESTORING);
 
         stats.restore();
 

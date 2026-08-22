@@ -177,3 +177,4 @@ It helped with:
 - some of the client render tests
 - setting up the logger configuration files (`server-logging.properties`,
   `client-logging.properties`)
+- generation of the minions and treasures in `EntryPoint`

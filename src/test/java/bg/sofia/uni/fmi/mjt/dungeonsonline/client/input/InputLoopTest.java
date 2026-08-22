@@ -53,6 +53,8 @@ public class InputLoopTest {
 
     private static final int UNKNOWN_KEY = 'x';
 
+    private static final int READS_UNTIL_THE_INPUT_ENDS = 3;
+
     private static final int UP_KEY = 'w';
     private static final int LEFT_KEY = 'a';
     private static final int DOWN_KEY = 's';
@@ -116,7 +118,7 @@ public class InputLoopTest {
 
         loop.run();
 
-        verify(console, times(3)).read();
+        verify(console, times(READS_UNTIL_THE_INPUT_ENDS)).read();
     }
 
     @Test

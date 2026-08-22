@@ -29,6 +29,12 @@ public class BackpackRendererTest {
     private static final String SELECTED_MARK = "> ";
     private static final String UNSELECTED_MARK = "  ";
 
+    private static final int XP_CAP = 100;
+    private static final int HEALTH = 100;
+    private static final int MANA = 100;
+    private static final int ATTACK = 50;
+    private static final int DEFENSE = 50;
+
     private static final int FIRST_SLOT = 0;
     private static final int SECOND_SLOT = 1;
 
@@ -104,8 +110,8 @@ public class BackpackRendererTest {
 
     private void mockBackpack(int selectedSlot) {
         List<ItemDTO> backpack = Arrays.asList(SWORD, null);
-        PlayerStateDTO player = new PlayerStateDTO(1, 0, 100, 100, 100, 100, 100, 50, 50,
-            backpack, selectedSlot);
+        PlayerStateDTO player = new PlayerStateDTO(1, 0, XP_CAP, HEALTH, HEALTH, MANA, MANA,
+            ATTACK, DEFENSE, backpack, selectedSlot);
 
         when(state.getState()).thenReturn(new GameStateDTO(List.of(), List.of(), player));
     }

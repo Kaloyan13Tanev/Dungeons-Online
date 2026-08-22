@@ -71,7 +71,6 @@ public class GameEngineImplTest {
     private static final int FIRST_SLOT = 0;
     private static final int SECOND_SLOT = 1;
 
-
     private static final int FIRST_LEVEL = 1;
 
     private static final Spell FIREBALL = new Spell("Fireball", 1, 40, 30);
@@ -142,7 +141,6 @@ public class GameEngineImplTest {
         players = new HashMap<>();
         engine = new GameEngineImpl(map, treasureIds, minionIds, random, players, stateProducer);
     }
-
 
     @Test
     void testJoinAddsThePlayerAtTheSpawnPoint() {
@@ -230,8 +228,6 @@ public class GameEngineImplTest {
         assertEquals(Set.of(SECOND_PLAYER_ID), events.getFirst().recipients(),
             "GameEngineImpl should tell the players that are left that a player left");
     }
-
-    
 
     @Test
     void testMoveMovesThePlayerOneTileInTheGivenDirection() {

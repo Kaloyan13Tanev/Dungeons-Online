@@ -13,6 +13,12 @@ public class LevelTest {
 
     private static final int SMALL_CAP = 10;
 
+    private static final int XP_GAIN = 50;
+    private static final int LEVELS = 3;
+    private static final int REMAINDER = 3;
+    private static final int SHORT_OF_THE_CAP = 4;
+    private static final int REST_OF_THE_CAP = 6;
+
     private Level level;
 
     @BeforeEach
@@ -38,9 +44,9 @@ public class LevelTest {
 
     @Test
     void testAddXpAddsToTheCurrentXp() {
-        level.addXp(50);
+        level.addXp(XP_GAIN);
 
-        assertEquals(50, level.getXp(), "Gained xp should be added to the current xp");
+        assertEquals(XP_GAIN, level.getXp(), "Gained xp should be added to the current xp");
     }
 
     @Test
@@ -66,19 +72,19 @@ public class LevelTest {
     void testAddXpCarriesTheRemainderIntoTheNewLevel() {
         Level small = new Level(STARTING_VALUE, SMALL_CAP);
 
-        small.addXp(SMALL_CAP + 3);
+        small.addXp(SMALL_CAP + REMAINDER);
 
-        assertEquals(3, small.getXp(), "Level should carry the experience past the cap into the new level");
+        assertEquals(REMAINDER, small.getXp(), "Level should carry the experience past the cap into the new level");
     }
 
     @Test
     void testAddXpGainsEveryLevelTheAmountCovers() {
         Level small = new Level(STARTING_VALUE, SMALL_CAP);
 
-        int gained = small.addXp(SMALL_CAP * 3 + 2);
+        int gained = small.addXp(SMALL_CAP * LEVELS + REMAINDER);
 
-        assertEquals(3, gained, "Level should report every level the gain covers");
-        assertEquals(STARTING_VALUE + 3, small.getValue(),
+        assertEquals(LEVELS, gained, "Level should report every level the gain covers");
+        assertEquals(STARTING_VALUE + LEVELS, small.getValue(),
             "Level should rise once per cap the gain covers");
     }
 
@@ -86,8 +92,8 @@ public class LevelTest {
     void testAddXpLevelsUpFromRepeatedGainsBelowTheCap() {
         Level small = new Level(STARTING_VALUE, SMALL_CAP);
 
-        assertEquals(0, small.addXp(SMALL_CAP - 4), "Level should not rise on a gain below the cap");
-        assertEquals(1, small.addXp(6), "Level should rise once the gains together reach the cap");
+        assertEquals(0, small.addXp(SMALL_CAP - SHORT_OF_THE_CAP), "Level should not rise on a gain below the cap");
+        assertEquals(1, small.addXp(REST_OF_THE_CAP), "Level should rise once the gains together reach the cap");
         assertEquals(2, small.getXp(), "Level should carry what the gains left over the cap");
     }
 

@@ -17,6 +17,14 @@ public class PlayerStatsTest {
 
     private static final int MANA_PER_LEVEL = 10;
 
+    private static final int LEVELS = 3;
+
+    private static final int MANA_COST = 30;
+    private static final int SMALL_MANA_COST = 20;
+    private static final int LARGE_MANA_COST = 70;
+    private static final int MANA_ABOVE_THE_CAP = 100;
+    private static final int DAMAGE = 60;
+
     private PlayerStats stats;
 
     @BeforeEach
@@ -36,9 +44,9 @@ public class PlayerStatsTest {
 
     @Test
     void testLevelUpRaisesMaxMana() {
-        stats.levelUp(3);
+        stats.levelUp(LEVELS);
 
-        assertEquals(BASE_MANA + 3 * MANA_PER_LEVEL, stats.getMaxMana(),
+        assertEquals(BASE_MANA + LEVELS * MANA_PER_LEVEL, stats.getMaxMana(),
             "Player stats should raise max mana once per level gained");
     }
 
@@ -54,9 +62,9 @@ public class PlayerStatsTest {
 
     @Test
     void testSpendManaSubtractsTheCost() {
-        stats.spendMana(30);
+        stats.spendMana(MANA_COST);
 
-        assertEquals(BASE_MANA - 30, stats.getMana(), "Player stats should subtract the spent mana");
+        assertEquals(BASE_MANA - MANA_COST, stats.getMana(), "Player stats should subtract the spent mana");
     }
 
     @Test
@@ -90,8 +98,8 @@ public class PlayerStatsTest {
 
     @Test
     void testRestoreManaCaps() {
-        stats.spendMana(20);
-        stats.restoreMana(100);
+        stats.spendMana(SMALL_MANA_COST);
+        stats.restoreMana(MANA_ABOVE_THE_CAP);
 
         assertEquals(BASE_MANA, stats.getMana(), "Player stats should never restore mana above the cap");
     }
@@ -104,8 +112,8 @@ public class PlayerStatsTest {
 
     @Test
     void testRestoreRefillsHealthAndMana() {
-        stats.takeDamage(60);
-        stats.spendMana(70);
+        stats.takeDamage(DAMAGE);
+        stats.spendMana(LARGE_MANA_COST);
 
         stats.restore();
 

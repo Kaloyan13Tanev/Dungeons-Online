@@ -24,6 +24,8 @@ public class StatsRendererTest {
 
     private static final int START_COLUMN = 1;
 
+    private static final int PRINTED_LINES = 3;
+
     private static final int LEVEL = 2;
     private static final int XP = 40;
     private static final int XP_CAP = 100;
@@ -93,7 +95,7 @@ public class StatsRendererTest {
 
     private String printedLine(int line) {
         ArgumentCaptor<String> printed = ArgumentCaptor.forClass(String.class);
-        verify(console, times(3)).print(printed.capture());
+        verify(console, times(PRINTED_LINES)).print(printed.capture());
 
         return printed.getAllValues().get(line);
     }

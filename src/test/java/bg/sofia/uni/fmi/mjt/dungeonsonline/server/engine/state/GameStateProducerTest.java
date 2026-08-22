@@ -34,6 +34,12 @@ public class GameStateProducerTest {
 
     private static final int TREASURE_ID = 1;
 
+    private static final int XP_CAP = 100;
+    private static final int HEALTH = 100;
+    private static final int MANA = 100;
+    private static final int ATTACK = 50;
+    private static final int DEFENSE = 50;
+
     private static final int FIRST_LEVEL = 1;
     private static final int SECOND_LEVEL = 2;
 
@@ -148,7 +154,8 @@ public class GameStateProducerTest {
     }
 
     private static PlayerStateDTO stateOfLevel(int level) {
-        return new PlayerStateDTO(level, 0, 100, 100, 100, 100, 100, 50, 50, List.of(), 0);
+        return new PlayerStateDTO(level, 0, XP_CAP, HEALTH, HEALTH, MANA, MANA, ATTACK, DEFENSE,
+            List.of(), 0);
     }
 
 }

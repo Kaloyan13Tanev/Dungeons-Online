@@ -30,6 +30,8 @@ public class ItemMapperTest {
     private static final int HEALING = 25;
     private static final int MANA = 35;
 
+    private static final int SLOTS = 3;
+
     private static final int NO_LEVEL = 0;
     private static final int NO_MANA_COST = 0;
 
@@ -98,7 +100,7 @@ public class ItemMapperTest {
     void testToDTOsKeepsTheEmptySlotsBetweenTheItems() {
         List<ItemDTO> mapped = mapper.toDTOs(Arrays.asList(SWORD, null, FIREBALL));
 
-        assertEquals(3, mapped.size(), "ItemMapper should map every slot it was given");
+        assertEquals(SLOTS, mapped.size(), "ItemMapper should map every slot it was given");
         assertNull(mapped.get(1), "ItemMapper should leave an empty slot empty");
     }
 

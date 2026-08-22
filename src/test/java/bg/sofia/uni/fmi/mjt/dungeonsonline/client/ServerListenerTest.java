@@ -68,7 +68,7 @@ public class ServerListenerTest {
 
         verify(mapper).deserialize(LINE);
     }
-    
+
     @Test
     void testRunRendersTheStateOfAStateResponse() throws IOException {
         mockResponse(new StateResponse(STATE));

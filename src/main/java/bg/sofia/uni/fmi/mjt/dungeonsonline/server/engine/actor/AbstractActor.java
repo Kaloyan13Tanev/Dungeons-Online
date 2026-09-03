@@ -3,6 +3,8 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.stats.Stats;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 
+import java.util.Objects;
+
 public abstract class AbstractActor implements Actor {
 
     private final int id;
@@ -38,6 +40,18 @@ public abstract class AbstractActor implements Actor {
 
     public void moveTo(Position position) {
         this.position = position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractActor that = (AbstractActor) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
 }

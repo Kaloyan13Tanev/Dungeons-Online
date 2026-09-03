@@ -3,6 +3,8 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
 
+import java.util.Objects;
+
 public class Treasure {
 
     private static final int PICKUP_EXPERIENCE = 20;
@@ -37,6 +39,18 @@ public class Treasure {
 
     public int getXp() {
         return xp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Treasure treasure = (Treasure) o;
+        return id == treasure.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
 }

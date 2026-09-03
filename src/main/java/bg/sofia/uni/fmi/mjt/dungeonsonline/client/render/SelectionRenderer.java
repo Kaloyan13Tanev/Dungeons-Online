@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.client.render;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.ClientState;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.Mode;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.console.Console;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.selection.Selection;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ActorDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TreasureDTO;
 
@@ -21,11 +22,13 @@ public class SelectionRenderer implements Renderer {
     private static final String HIGHLIGHT_OFF = "\033[0m";
 
     private final Console console;
+    private final Selection selection;
     private final ItemFormatter items;
     private final int startColumn;
 
-    public SelectionRenderer(Console console, ItemFormatter items, int startColumn) {
+    public SelectionRenderer(Console console, Selection selection, ItemFormatter items, int startColumn) {
         this.console = console;
+        this.selection = selection;
         this.items = items;
         this.startColumn = startColumn;
     }
@@ -34,19 +37,20 @@ public class SelectionRenderer implements Renderer {
     public void render(ClientState state) {
         console.clearArea(START_ROW, startColumn, ENTITY_LABEL.length(), MAX_LINES);
 
-        if (state.getMode() == Mode.EXPLORING) {
+        if (selection.mode() == Mode.EXPLORING) {
             console.flush();
             return;
         }
 
         List<Entry> entries = toEntries(state);
+        Integer chosen = selection.chosen();
 
         console.moveCursor(START_ROW, startColumn);
-        console.print(state.getMode() == Mode.CHOOSING_TREASURE ? ITEM_LABEL : ENTITY_LABEL);
+        console.print(selection.mode() == Mode.CHOOSING_TREASURE ? ITEM_LABEL : ENTITY_LABEL);
 
         for (int line = 0; line < entries.size(); line++) {
             Entry entry = entries.get(line);
-            boolean highlighted = state.getHighlightedId() != null && state.getHighlightedId() == entry.id();
+            boolean highlighted = chosen != null && chosen == entry.id();
 
             console.moveCursor(START_ROW + line + 1, startColumn);
             console.print(highlighted ? HIGHLIGHT_ON + entry.text() + HIGHLIGHT_OFF : entry.text());
@@ -58,7 +62,7 @@ public class SelectionRenderer implements Renderer {
     private List<Entry> toEntries(ClientState state) {
         List<Entry> entries = new ArrayList<>();
 
-        if (state.getMode() == Mode.CHOOSING_TREASURE) {
+        if (selection.mode() == Mode.CHOOSING_TREASURE) {
             for (TreasureDTO treasure : state.treasuresOnMyTile()) {
                 entries.add(new Entry(treasure.id(), items.format(treasure.item())));
             }
@@ -66,7 +70,7 @@ public class SelectionRenderer implements Renderer {
             return entries;
         }
 
-        List<ActorDTO> actors = state.getMode() == Mode.CHOOSING_PLAYER
+        List<ActorDTO> actors = selection.mode() == Mode.CHOOSING_PLAYER
             ? state.playersOnMyTile()
             : state.actorsOnMyTile();
 

@@ -21,8 +21,7 @@ public class ClientState {
     private GameStateDTO state;
     private final Queue<Message> messages = new ArrayDeque<>();
 
-    private Mode mode = Mode.EXPLORING;
-    private Integer highlightedId;
+    private volatile boolean playing = true;
 
     public int getPlayerId() {
         return playerId;
@@ -60,20 +59,12 @@ public class ClientState {
         add(new Message(text, true));
     }
 
-    public Mode getMode() {
-        return mode;
+    public boolean isPlaying() {
+        return playing;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public Integer getHighlightedId() {
-        return highlightedId;
-    }
-
-    public void setHighlightedId(Integer highlightedId) {
-        this.highlightedId = highlightedId;
+    public void stopPlaying() {
+        playing = false;
     }
 
     public Optional<ActorDTO> getSelf() {
@@ -128,6 +119,26 @@ public class ClientState {
         }
 
         return List.copyOf(onTile);
+    }
+
+    public List<Integer> targetIds() {
+        return actorIds(actorsOnMyTile());
+    }
+
+    public List<Integer> playerIds() {
+        return actorIds(playersOnMyTile());
+    }
+
+    public List<Integer> treasureIds() {
+        return treasuresOnMyTile().stream()
+                .map(TreasureDTO::id)
+                .toList();
+    }
+
+    private List<Integer> actorIds(List<ActorDTO> actors) {
+        return actors.stream()
+                .map(ActorDTO::id)
+                .toList();
     }
 
     private void add(Message message) {

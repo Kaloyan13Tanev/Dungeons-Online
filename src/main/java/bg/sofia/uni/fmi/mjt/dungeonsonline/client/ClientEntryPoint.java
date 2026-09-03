@@ -23,7 +23,21 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.MapRenderer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.MessageRenderer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.SelectionRenderer;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.StatsRenderer;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.actor.ActorViewRouter;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.actor.MinionView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.actor.PlayerView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.item.HealthPotionView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.item.ItemViewRouter;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.item.ManaPotionView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.item.SpellView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.item.WeaponView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.terrain.GroundView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.terrain.ObstacleView;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.render.view.terrain.TerrainViewRouter;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.selection.Selection;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ActorKind;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ItemKind;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.TerrainKind;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.GiveRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.PickUpRequest;
@@ -121,14 +135,48 @@ public class ClientEntryPoint {
     }
 
     private GameRenderer buildRenderer(Console console, ClientState state, Selection selection) {
-        ItemFormatter items = new ItemFormatter();
+        ActorViewRouter actors = actorViews();
+        ItemFormatter items = new ItemFormatter(itemViews(), actors);
 
         return new GameRendererImpl(console, state, selection,
-            new MapRenderer(console, items),
+            new MapRenderer(console, items, terrainViews(), actors),
             new StatsRenderer(console, PANEL_COLUMN),
             new BackpackRenderer(console, items, PANEL_COLUMN),
             new MessageRenderer(console, PANEL_COLUMN),
             new SelectionRenderer(console, selection, items, PANEL_COLUMN));
+    }
+
+    private ItemViewRouter itemViews() {
+        ItemViewRouter views = new ItemViewRouter();
+
+        views.register(ItemKind.WEAPON,
+            item -> new WeaponView(item.name(), item.level(), item.power()));
+        views.register(ItemKind.SPELL,
+            item -> new SpellView(item.name(), item.level(), item.power(), item.manaCost()));
+        views.register(ItemKind.HEALTH_POTION,
+            item -> new HealthPotionView(item.name(), item.power()));
+        views.register(ItemKind.MANA_POTION,
+            item -> new ManaPotionView(item.name(), item.power()));
+
+        return views;
+    }
+
+    private TerrainViewRouter terrainViews() {
+        TerrainViewRouter views = new TerrainViewRouter();
+
+        views.register(TerrainKind.GROUND, new GroundView());
+        views.register(TerrainKind.OBSTACLE, new ObstacleView());
+
+        return views;
+    }
+
+    private ActorViewRouter actorViews() {
+        ActorViewRouter views = new ActorViewRouter();
+
+        views.register(ActorKind.MINION, actor -> new MinionView());
+        views.register(ActorKind.PLAYER, actor -> new PlayerView(actor.id()));
+
+        return views;
     }
 
     private KeyBindings buildBindings(ClientState state, Selection selection, GameRenderer renderer) {

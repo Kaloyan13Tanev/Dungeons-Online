@@ -20,12 +20,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class PlayerClient {
 
@@ -58,10 +59,8 @@ public class PlayerClient {
     private void play(Socket socket) throws IOException {
         Console console = new JLineConsole();
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-             BufferedWriter writer = new BufferedWriter(
-                     new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), UTF_8));
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8))) {
 
             ClientState state = new ClientState();
             GameRenderer renderer = buildRenderer(console, state);

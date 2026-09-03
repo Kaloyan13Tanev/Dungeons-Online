@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class PlayerConnection implements AutoCloseable {
 
     private static final Logger LOGGER = Logger.getLogger(PlayerConnection.class.getName());
@@ -23,8 +25,8 @@ public class PlayerConnection implements AutoCloseable {
 
     public PlayerConnection(int playerId, Socket socket) throws IOException {
         this(playerId, socket,
-            new BufferedReader(new InputStreamReader(socket.getInputStream())),
-            new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
+            new BufferedReader(new InputStreamReader(socket.getInputStream(), UTF_8)),
+            new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8)));
     }
 
     PlayerConnection(int playerId, Socket socket, BufferedReader reader, BufferedWriter writer) {

@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class GameServer {
 
     private static final int SERVER_PORT = 4444;
@@ -122,7 +124,7 @@ public class GameServer {
 
     private void reject(Socket socket) {
         try (socket;
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8))) {
             writer.write(mapper.serialize(new HandshakeResponse(false, NO_PLAYER_ID, REJECTION_MESSAGE, null)));
             writer.newLine();
             writer.flush();

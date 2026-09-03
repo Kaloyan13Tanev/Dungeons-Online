@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.server;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.connection.ConnectionRegistry;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngine;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEngineImpl;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEvent;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Actor;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.actor.Minion;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.item.Item;
@@ -16,15 +17,25 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.map.TerrainGrid;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.position.Position;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.treasure.Treasure;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.RequestHandler;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.server.handler.Router;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdGenerator;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.IdPool;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.id.SequentialIdGenerator;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.DropRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.GiveRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.PickUpRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.QuitRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestType;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.SelectRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.UseRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
@@ -109,7 +120,7 @@ public class EntryPoint {
             minionIds,
             new Random());
 
-        RequestHandler handler = new RequestHandler(registry, engine);
+        RequestHandler handler = new RequestHandler(registry, engine, routes(engine, registry));
         try {
             GameServer server = new GameServer(pool, registry, handler, engine);
             server.run();
@@ -117,6 +128,33 @@ public class EntryPoint {
             System.out.println("Could not start the server.");
             LOGGER.log(Level.SEVERE, "Error occurred while starting the server.", e);
         }
+    }
+
+    private static Router routes(GameEngine engine, ConnectionRegistry registry) {
+        Router router = new Router();
+
+        router.register(RequestType.MOVE, MoveRequest.class,
+            (playerId, request) -> engine.move(playerId, request.direction()));
+        router.register(RequestType.SELECT, SelectRequest.class,
+            (playerId, request) -> engine.select(playerId, request.slot()));
+        router.register(RequestType.USE, UseRequest.class,
+            (playerId, request) -> engine.use(playerId, request.targetId()));
+        router.register(RequestType.PICK_UP, PickUpRequest.class,
+            (playerId, request) -> engine.pickUp(playerId, request.treasureId()));
+        router.register(RequestType.GIVE, GiveRequest.class,
+            (playerId, request) -> engine.give(playerId, request.targetPlayerId()));
+        router.register(RequestType.DROP, DropRequest.class,
+            (playerId, request) -> engine.drop(playerId));
+        router.register(RequestType.QUIT, QuitRequest.class,
+            (playerId, request) -> quit(registry, playerId));
+
+        return router;
+    }
+
+    private static List<GameEvent> quit(ConnectionRegistry registry, int playerId) {
+        registry.unregister(playerId);
+
+        return List.of();
     }
 
     private static Map<Integer, Actor> minions(IdGenerator<Integer> ids) {

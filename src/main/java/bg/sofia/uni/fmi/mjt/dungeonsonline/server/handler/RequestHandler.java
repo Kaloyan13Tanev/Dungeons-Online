@@ -6,16 +6,8 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEvent;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.InvalidActionException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.InvalidRequestException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestMapper;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.DropRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.GiveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.PickUpRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.QuitRequest;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.SelectRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.UseRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ErrorResponse;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.EventResponse;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.StateResponse;
@@ -34,15 +26,17 @@ public class RequestHandler {
 
     private final ConnectionRegistry registry;
     private final GameEngine engine;
+    private final Router router;
     private final RequestMapper mapper;
 
-    public RequestHandler(ConnectionRegistry registry, GameEngine engine) {
-        this(registry, engine, new RequestMapper());
+    public RequestHandler(ConnectionRegistry registry, GameEngine engine, Router router) {
+        this(registry, engine, router, new RequestMapper());
     }
 
-    RequestHandler(ConnectionRegistry registry, GameEngine engine, RequestMapper mapper) {
+    RequestHandler(ConnectionRegistry registry, GameEngine engine, Router router, RequestMapper mapper) {
         this.registry = registry;
         this.engine = engine;
+        this.router = router;
         this.mapper = mapper;
     }
 
@@ -58,7 +52,7 @@ public class RequestHandler {
 
         LOGGER.log(Level.INFO, "Player {0} sent {1}.", new Object[] {playerId, request});
         try {
-            distribute(route(playerId, request));
+            distribute(router.route(playerId, request));
         } catch (InvalidActionException e) {
             registry.sendTo(playerId, new ErrorResponse(e.getMessage()));
             LOGGER.log(Level.WARNING, "Player {0} tried {1} and was refused: {2}",
@@ -77,24 +71,6 @@ public class RequestHandler {
         for (Map.Entry<Integer, GameStateDTO> state : engine.stateForAll().entrySet()) {
             registry.sendTo(state.getKey(), new StateResponse(state.getValue()));
         }
-    }
-
-    private List<GameEvent> route(int playerId, Request request) {
-        return switch (request) {
-            case MoveRequest(Direction direction) -> engine.move(playerId, direction);
-            case SelectRequest(int slot) -> engine.select(playerId, slot);
-            case UseRequest(Integer targetId) -> engine.use(playerId, targetId);
-            case PickUpRequest(int treasureId) -> engine.pickUp(playerId, treasureId);
-            case GiveRequest(int targetPlayerId) -> engine.give(playerId, targetPlayerId);
-            case DropRequest ignored -> engine.drop(playerId);
-            case QuitRequest ignored -> quit(playerId);
-        };
-    }
-
-    private List<GameEvent> quit(int playerId) {
-        registry.unregister(playerId);
-
-        return List.of();
     }
 
 }

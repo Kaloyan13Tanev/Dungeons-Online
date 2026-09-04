@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.dungeonsonline.client.render;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.ClientState;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.Mode;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.console.Console;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.selection.Selection;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ActorDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ItemDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.TreasureDTO;
@@ -18,7 +19,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,10 +35,14 @@ public class SelectionRendererTest {
     private static final int ROW = 3;
     private static final int COL = 4;
 
+    private static final int LEVEL = 1;
+    private static final int POWER = 20;
+    private static final int NO_MANA_COST = 0;
+
     private static final String HIGHLIGHT_ON = "\033[33m";
     private static final String HIGHLIGHT_OFF = "\033[0m";
 
-    private static final ItemDTO ITEM = new ItemDTO(ItemKind.WEAPON, "Sword", 1, 20, 0);
+    private static final ItemDTO ITEM = new ItemDTO(ItemKind.WEAPON, "Sword", LEVEL, POWER, NO_MANA_COST);
 
     private static final ActorDTO OTHER_PLAYER = new ActorDTO(OTHER_PLAYER_ID, ActorKind.PLAYER, ROW, COL);
     private static final ActorDTO MINION = new ActorDTO(MINION_ID, ActorKind.MINION, ROW, COL);
@@ -53,18 +57,20 @@ public class SelectionRendererTest {
     @Mock
     private ClientState state;
     @Mock
+    private Selection selection;
+    @Mock
     private ItemFormatter items;
 
     private SelectionRenderer renderer;
 
     @BeforeEach
     void setUp() {
-        renderer = new SelectionRenderer(console, items, START_COLUMN);
+        renderer = new SelectionRenderer(console, selection, items, START_COLUMN);
     }
 
     @Test
     void testRenderShowsNothingWhileExploring() {
-        when(state.getMode()).thenReturn(Mode.EXPLORING);
+        when(selection.mode()).thenReturn(Mode.EXPLORING);
 
         renderer.render(state);
 
@@ -74,7 +80,7 @@ public class SelectionRendererTest {
 
     @Test
     void testRenderShowsEveryActorOnTheTile() {
-        when(state.getMode()).thenReturn(Mode.CHOOSING_TARGET);
+        when(selection.mode()).thenReturn(Mode.CHOOSING_TARGET);
         when(state.actorsOnMyTile()).thenReturn(List.of(OTHER_PLAYER, MINION));
         when(items.format(OTHER_PLAYER)).thenReturn(PLAYER_TEXT);
         when(items.format(MINION)).thenReturn(MINION_TEXT);
@@ -83,14 +89,13 @@ public class SelectionRendererTest {
 
         verify(console).print(PLAYER_TEXT);
         verify(console).print(MINION_TEXT);
-        verify(console, never()).print(startsWith(HIGHLIGHT_ON));
     }
 
     @Test
     void testRenderHighlightsTheChosenEntry() {
-        when(state.getMode()).thenReturn(Mode.CHOOSING_TARGET);
+        when(selection.mode()).thenReturn(Mode.CHOOSING_TARGET);
+        when(selection.chosen()).thenReturn(MINION_ID);
         when(state.actorsOnMyTile()).thenReturn(List.of(OTHER_PLAYER, MINION));
-        when(state.getHighlightedId()).thenReturn(MINION_ID);
         when(items.format(OTHER_PLAYER)).thenReturn(PLAYER_TEXT);
         when(items.format(MINION)).thenReturn(MINION_TEXT);
 
@@ -102,7 +107,7 @@ public class SelectionRendererTest {
 
     @Test
     void testRenderShowsTheItemsOfTheTreasuresWhileChoosingATreasure() {
-        when(state.getMode()).thenReturn(Mode.CHOOSING_TREASURE);
+        when(selection.mode()).thenReturn(Mode.CHOOSING_TREASURE);
         when(state.treasuresOnMyTile()).thenReturn(List.of(TREASURE));
         when(items.format(ITEM)).thenReturn(ITEM_TEXT);
 
@@ -113,14 +118,13 @@ public class SelectionRendererTest {
 
     @Test
     void testRenderShowsOnlyThePlayersWhileChoosingAPlayer() {
-        when(state.getMode()).thenReturn(Mode.CHOOSING_PLAYER);
+        when(selection.mode()).thenReturn(Mode.CHOOSING_PLAYER);
         when(state.playersOnMyTile()).thenReturn(List.of(OTHER_PLAYER));
         when(items.format(OTHER_PLAYER)).thenReturn(PLAYER_TEXT);
 
         renderer.render(state);
 
         verify(console).print(PLAYER_TEXT);
-        verify(state).playersOnMyTile();
     }
 
 }

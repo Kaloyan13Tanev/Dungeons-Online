@@ -1,10 +1,10 @@
 package bg.sofia.uni.fmi.mjt.dungeonsonline.client;
 
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.CancelCommand;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.ChangeSelectionCommand;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.ClientCommand;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.ConfirmCommand;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.DropCommand;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.HighlightCommand;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.MoveCommand;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.OpenListCommand;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.client.command.QuitCommand;
@@ -233,8 +233,8 @@ public class ClientEntryPoint {
 
     private void bindSelecting(KeyBindings bindings, Selection selection, GameRenderer renderer, Mode mode,
                                IntFunction<Request> requestFor) {
-        bindings.bind(mode, KeyReader.ARROW_UP, new HighlightCommand(selection, renderer, PREVIOUS));
-        bindings.bind(mode, KeyReader.ARROW_DOWN, new HighlightCommand(selection, renderer, NEXT));
+        bindings.bind(mode, KeyReader.ARROW_UP, new ChangeSelectionCommand(selection, renderer, PREVIOUS));
+        bindings.bind(mode, KeyReader.ARROW_DOWN, new ChangeSelectionCommand(selection, renderer, NEXT));
         bindings.bind(mode, KeyReader.ENTER, new ConfirmCommand(selection, renderer, requestFor));
         bindings.bind(mode, CANCEL_KEY, new CancelCommand(selection, renderer));
     }

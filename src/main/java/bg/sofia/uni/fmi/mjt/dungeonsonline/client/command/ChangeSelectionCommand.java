@@ -6,13 +6,13 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Request;
 
 import java.util.Optional;
 
-public class HighlightCommand implements ClientCommand {
+public class ChangeSelectionCommand implements ClientCommand {
 
     private final Selection selection;
     private final GameRenderer renderer;
     private final int offset;
 
-    public HighlightCommand(Selection selection, GameRenderer renderer, int offset) {
+    public ChangeSelectionCommand(Selection selection, GameRenderer renderer, int offset) {
         this.selection = selection;
         this.renderer = renderer;
         this.offset = offset;

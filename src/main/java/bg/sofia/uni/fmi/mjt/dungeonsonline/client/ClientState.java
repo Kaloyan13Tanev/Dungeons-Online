@@ -21,7 +21,7 @@ public class ClientState {
     private GameStateDTO state;
     private final Queue<Message> messages = new ArrayDeque<>();
 
-    private volatile boolean playing = true;
+    private boolean playing = true;
 
     public int getPlayerId() {
         return playerId;

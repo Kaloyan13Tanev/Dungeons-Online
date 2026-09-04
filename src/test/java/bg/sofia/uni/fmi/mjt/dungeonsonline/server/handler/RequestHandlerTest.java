@@ -6,17 +6,11 @@ import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.GameEvent;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.server.engine.backpack.EmptySlotException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.ActorDTO;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.dto.GameStateDTO;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.InvalidRequestException;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.kind.ActorKind;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.Direction;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.DropRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.GiveRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.InvalidRequestException;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.MoveRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.PickUpRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.QuitRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.SelectRequest;
-import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.UseRequest;
+import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.request.RequestMapper;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.ErrorResponse;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.EventResponse;
 import bg.sofia.uni.fmi.mjt.dungeonsonline.shared.response.StateResponse;
@@ -31,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,10 +32,6 @@ public class RequestHandlerTest {
 
     private static final int FIRST_PLAYER_ID = 1;
     private static final int SECOND_PLAYER_ID = 2;
-
-    private static final int TREASURE_ID = 1;
-    private static final int TARGET_ID = 10;
-    private static final int SLOT = 1;
 
     private static final String REQUEST = "serialized request";
 
@@ -52,6 +41,8 @@ public class RequestHandlerTest {
 
     private static final String FIRST_MESSAGE = "Player 1 joined the game.";
     private static final String SECOND_MESSAGE = "Player 2 left the game.";
+
+    private static final MoveRequest MOVE = new MoveRequest(Direction.UP);
 
     private static final GameStateDTO FIRST_STATE = new GameStateDTO(
         List.of(new ActorDTO(FIRST_PLAYER_ID, ActorKind.PLAYER, 0, 0)), List.of(), null);
@@ -63,76 +54,24 @@ public class RequestHandlerTest {
     @Mock
     private GameEngine engine;
     @Mock
+    private Router router;
+    @Mock
     private RequestMapper mapper;
 
     private RequestHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new RequestHandler(registry, engine, mapper);
+        handler = new RequestHandler(registry, engine, router, mapper);
     }
 
     @Test
-    void testHandleMovesThePlayerOnAMoveRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new MoveRequest(Direction.UP));
+    void testHandleRoutesTheRequestItRead() {
+        when(mapper.deserialize(REQUEST)).thenReturn(MOVE);
 
         handler.handle(FIRST_PLAYER_ID, REQUEST);
 
-        verify(engine).move(FIRST_PLAYER_ID, Direction.UP);
-    }
-
-    @Test
-    void testHandleSelectsTheSlotOnASelectRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new SelectRequest(SLOT));
-
-        handler.handle(FIRST_PLAYER_ID, REQUEST);
-
-        verify(engine).select(FIRST_PLAYER_ID, SLOT);
-    }
-
-    @Test
-    void testHandleUsesTheSelectedItemOnAUseRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new UseRequest(TARGET_ID));
-
-        handler.handle(FIRST_PLAYER_ID, REQUEST);
-
-        verify(engine).use(FIRST_PLAYER_ID, TARGET_ID);
-    }
-
-    @Test
-    void testHandlePicksUpTheTreasureOnAPickUpRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new PickUpRequest(TREASURE_ID));
-
-        handler.handle(FIRST_PLAYER_ID, REQUEST);
-
-        verify(engine).pickUp(FIRST_PLAYER_ID, TREASURE_ID);
-    }
-
-    @Test
-    void testHandleGivesTheItemOnAGiveRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new GiveRequest(SECOND_PLAYER_ID));
-
-        handler.handle(FIRST_PLAYER_ID, REQUEST);
-
-        verify(engine).give(FIRST_PLAYER_ID, SECOND_PLAYER_ID);
-    }
-
-    @Test
-    void testHandleDropsTheItemOnADropRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new DropRequest());
-
-        handler.handle(FIRST_PLAYER_ID, REQUEST);
-
-        verify(engine).drop(FIRST_PLAYER_ID);
-    }
-
-    @Test
-    void testHandleUnregistersThePlayerOnAQuitRequest() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new QuitRequest());
-
-        handler.handle(FIRST_PLAYER_ID, REQUEST);
-
-        verify(registry).unregister(FIRST_PLAYER_ID);
+        verify(router).route(FIRST_PLAYER_ID, MOVE);
     }
 
     @Test
@@ -142,13 +81,12 @@ public class RequestHandlerTest {
         handler.handle(FIRST_PLAYER_ID, REQUEST);
 
         verify(registry).sendTo(FIRST_PLAYER_ID, new ErrorResponse(UNREADABLE_REQUEST));
-        verifyNoInteractions(engine);
     }
 
     @Test
     void testHandleTellsThePlayerWhyTheirActionWasRefused() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new DropRequest());
-        when(engine.drop(FIRST_PLAYER_ID)).thenThrow(new EmptySlotException(REFUSAL));
+        when(mapper.deserialize(REQUEST)).thenReturn(MOVE);
+        when(router.route(FIRST_PLAYER_ID, MOVE)).thenThrow(new EmptySlotException(REFUSAL));
 
         handler.handle(FIRST_PLAYER_ID, REQUEST);
 
@@ -157,8 +95,8 @@ public class RequestHandlerTest {
 
     @Test
     void testHandleTellsThePlayerWhenTheRequestCouldNotBeHandled() {
-        when(mapper.deserialize(REQUEST)).thenReturn(new DropRequest());
-        when(engine.drop(FIRST_PLAYER_ID)).thenThrow(new IllegalStateException("Broken"));
+        when(mapper.deserialize(REQUEST)).thenReturn(MOVE);
+        when(router.route(FIRST_PLAYER_ID, MOVE)).thenThrow(new IllegalStateException("Broken"));
 
         handler.handle(FIRST_PLAYER_ID, REQUEST);
 
